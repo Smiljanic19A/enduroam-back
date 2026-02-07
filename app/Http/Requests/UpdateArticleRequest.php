@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+final class UpdateArticleRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => ['sometimes', 'string', 'max:255'],
+            'excerpt' => ['sometimes', 'string'],
+            'content' => ['sometimes', 'string'],
+            'image' => ['nullable', 'string', 'max:2048'],
+            'date' => ['sometimes', 'date'],
+            'author' => ['nullable', 'string', 'max:255'],
+            'is_published' => ['sometimes', 'boolean'],
+        ];
+    }
+}
