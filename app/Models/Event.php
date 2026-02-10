@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,6 +43,13 @@ final class Event extends Model
             'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    protected function featuredImage(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => to_s3_path($value),
+        );
     }
 
     public function includes(): HasMany

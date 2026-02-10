@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 final class Banner extends Model
@@ -26,6 +27,13 @@ final class Banner extends Model
             'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => to_s3_path($value),
+        );
     }
 
     public function scopeActive($query)
