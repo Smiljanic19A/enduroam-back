@@ -13,7 +13,7 @@ final class ImageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'path' => $this->path,
+            'path' => presigned_url($this->path),
             'alt' => $this->alt,
             'sortOrder' => $this->sort_order,
         ];

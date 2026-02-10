@@ -24,7 +24,7 @@ final class EventResource extends JsonResource
             'location' => $this->location,
             'maxParticipants' => $this->max_participants,
             'spotsLeft' => $this->spots_left,
-            'featuredImage' => $this->featured_image,
+            'featuredImage' => presigned_url($this->featured_image),
             'sortOrder' => $this->sort_order,
             'isActive' => $this->is_active,
             'includes' => IncludeItemResource::collection($this->whenLoaded('includes')),

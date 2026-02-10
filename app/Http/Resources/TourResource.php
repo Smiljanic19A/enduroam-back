@@ -22,7 +22,7 @@ final class TourResource extends JsonResource
             'currency' => $this->currency,
             'location' => $this->location,
             'maxParticipants' => $this->max_participants,
-            'featuredImage' => $this->featured_image,
+            'featuredImage' => presigned_url($this->featured_image),
             'sortOrder' => $this->sort_order,
             'isActive' => $this->is_active,
             'includes' => IncludeItemResource::collection($this->whenLoaded('includes')),

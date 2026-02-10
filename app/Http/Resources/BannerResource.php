@@ -14,7 +14,7 @@ final class BannerResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type,
-            'image' => $this->image,
+            'image' => presigned_url($this->image),
             'title' => $this->title,
             'text' => $this->text,
             'textPosition' => $this->text_position,

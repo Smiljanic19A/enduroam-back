@@ -14,7 +14,7 @@ final class SponsorResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'logo' => $this->logo,
+            'logo' => presigned_url($this->logo),
             'url' => $this->url,
             'sortOrder' => $this->sort_order,
         ];

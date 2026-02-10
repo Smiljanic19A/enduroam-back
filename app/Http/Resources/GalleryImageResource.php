@@ -13,7 +13,7 @@ final class GalleryImageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'src' => $this->src,
+            'src' => presigned_url($this->src),
             'alt' => $this->alt,
             'aspectRatio' => $this->aspect_ratio,
             'sortOrder' => $this->sort_order,

@@ -20,7 +20,7 @@ final class UploadController extends Controller
 
         return response()->json([
             'path' => $path,
-            'url' => Storage::disk('s3')->url($path),
+            'url' => presigned_url($path),
         ], 201);
     }
 
