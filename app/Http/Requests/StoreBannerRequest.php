@@ -18,7 +18,7 @@ final class StoreBannerRequest extends FormRequest
         return [
             'type' => ['sometimes', 'string', 'max:50'],
             'image' => ['required', 'string', 'max:2048'],
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
             'text' => ['nullable', 'string'],
             'text_position' => ['sometimes', 'string', 'in:left,center,right'],
             'cta_text' => ['nullable', 'string', 'max:255'],
