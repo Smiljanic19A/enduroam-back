@@ -17,6 +17,7 @@ Route::prefix('v1')->group(function (): void {
 
     // Auth
     Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/register', [AuthController::class, 'register']);
 
     // Tours
     Route::get('/tours', [PublicApi\TourController::class, 'index'])->name('public.tours.index');
