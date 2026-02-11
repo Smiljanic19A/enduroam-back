@@ -31,8 +31,7 @@ final class EventController extends Controller
     public function featured(): EventResource
     {
         $event = Event::active()
-            ->where('date', '>=', now())
-            ->orderBy('date')
+            ->where('is_featured', true)
             ->with(['includes', 'images', 'approvedReviews'])
             ->firstOrFail();
 

@@ -27,6 +27,7 @@ final class EventResource extends JsonResource
             'featuredImage' => presigned_url($this->featured_image),
             'sortOrder' => $this->sort_order,
             'isActive' => $this->is_active,
+            'isFeatured' => $this->is_featured,
             'includes' => IncludeItemResource::collection($this->whenLoaded('includes')),
             'images' => ImageResource::collection($this->whenLoaded('images')),
             'reviews' => ReviewResource::collection($this->whenLoaded('approvedReviews')),

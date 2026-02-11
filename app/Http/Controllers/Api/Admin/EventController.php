@@ -99,4 +99,16 @@ final class EventController extends Controller
 
         return response()->json(['message' => 'Event deleted successfully.']);
     }
+
+    public function setFeatured(Event $event): EventResource
+    {
+        DB::transaction(function () use ($event): void {
+            Event::where('is_featured', true)->update(['is_featured' => false]);
+            $event->update(['is_featured' => true]);
+        });
+
+        $event->load(['includes', 'images', 'approvedReviews']);
+
+        return new EventResource($event);
+    }
 }

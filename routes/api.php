@@ -80,6 +80,7 @@ Route::prefix('v1')->group(function (): void {
 
         // Events CRUD
         Route::apiResource('events', Admin\EventController::class)->names('events');
+        Route::post('/events/{event}/set-featured', [Admin\EventController::class, 'setFeatured'])->name('events.setFeatured');
 
         // Articles CRUD
         Route::apiResource('articles', Admin\ArticleController::class)->names('articles');

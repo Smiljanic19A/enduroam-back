@@ -30,6 +30,7 @@ final class Event extends Model
         'featured_image',
         'sort_order',
         'is_active',
+        'is_featured',
     ];
 
     protected function casts(): array
@@ -42,6 +43,7 @@ final class Event extends Model
             'spots_left' => 'integer',
             'sort_order' => 'integer',
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
         ];
     }
 
