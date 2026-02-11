@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final class EventController extends Controller
@@ -28,12 +29,16 @@ final class EventController extends Controller
         return new EventResource($event);
     }
 
-    public function featured(): EventResource
+    public function featured(): EventResource|JsonResponse
     {
         $event = Event::active()
             ->where('is_featured', true)
             ->with(['includes', 'images', 'approvedReviews'])
-            ->firstOrFail();
+            ->first();
+
+        if (! $event) {
+            return response()->json(['message' => 'No featured event set.'], 204);
+        }
 
         return new EventResource($event);
     }
