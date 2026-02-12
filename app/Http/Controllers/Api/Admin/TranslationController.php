@@ -110,8 +110,8 @@ final class TranslationController extends Controller
     {
         $json = Translation::buildLocaleJson($locale);
 
-        Storage::disk('s3')->put(
-            "translations/{$locale}.json",
+        Storage::disk('s3-translations')->put(
+            "{$locale}.json",
             json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
             'public'
         );
