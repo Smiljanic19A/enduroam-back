@@ -128,6 +128,12 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/newsletter-subscribers', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');
         Route::delete('/newsletter-subscribers/{subscriber}', [Admin\NewsletterController::class, 'destroy'])->name('newsletter.destroy');
 
+        // Translations
+        Route::get('/translations', [Admin\TranslationController::class, 'index'])->name('translations.index');
+        Route::get('/translations/groups', [Admin\TranslationController::class, 'groups'])->name('translations.groups');
+        Route::put('/translations/bulk', [Admin\TranslationController::class, 'bulkUpdate'])->name('translations.bulkUpdate');
+        Route::post('/translations/publish', [Admin\TranslationController::class, 'publishAll'])->name('translations.publishAll');
+
         // File Upload (Wasabi S3)
         Route::post('/upload', [Admin\UploadController::class, 'store'])->name('upload.store');
         Route::delete('/upload', [Admin\UploadController::class, 'destroy'])->name('upload.destroy');

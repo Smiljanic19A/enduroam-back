@@ -234,6 +234,9 @@ final class DatabaseSeeder extends Seeder
             'sort_order' => 4,
         ]);
 
+        // Translations
+        $this->call(TranslationSeeder::class);
+
         // Articles
         Article::create([
             'title' => 'Top 10 Enduro Trails for 2026',
