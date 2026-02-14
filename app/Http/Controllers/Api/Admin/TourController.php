@@ -17,7 +17,7 @@ final class TourController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        $tours = Tour::with(['includes', 'images', 'unavailableDates', 'approvedReviews'])
+        $tours = Tour::with(['includes', 'images', 'availableDates', 'approvedReviews'])
             ->ordered()
             ->get();
 
@@ -30,9 +30,9 @@ final class TourController extends Controller
             $data = $request->validated();
             $includes = $data['includes'] ?? [];
             $images = $data['images'] ?? [];
-            $unavailableDates = $data['unavailable_dates'] ?? [];
+            $availableDates = $data['available_dates'] ?? [];
 
-            unset($data['includes'], $data['images'], $data['unavailable_dates']);
+            unset($data['includes'], $data['images'], $data['available_dates']);
 
             $tour = Tour::create($data);
 
@@ -44,21 +44,21 @@ final class TourController extends Controller
                 $tour->images()->create($image);
             }
 
-            foreach ($unavailableDates as $date) {
-                $tour->unavailableDates()->create(['date' => $date]);
+            foreach ($availableDates as $date) {
+                $tour->availableDates()->create(['date' => $date]);
             }
 
             return $tour;
         });
 
-        $tour->load(['includes', 'images', 'unavailableDates', 'approvedReviews']);
+        $tour->load(['includes', 'images', 'availableDates', 'approvedReviews']);
 
         return new TourResource($tour);
     }
 
     public function show(Tour $tour): TourResource
     {
-        $tour->load(['includes', 'images', 'unavailableDates', 'approvedReviews', 'bookings']);
+        $tour->load(['includes', 'images', 'availableDates', 'approvedReviews', 'bookings']);
 
         return new TourResource($tour);
     }
@@ -69,9 +69,9 @@ final class TourController extends Controller
             $data = $request->validated();
             $includes = $data['includes'] ?? null;
             $images = $data['images'] ?? null;
-            $unavailableDates = $data['unavailable_dates'] ?? null;
+            $availableDates = $data['available_dates'] ?? null;
 
-            unset($data['includes'], $data['images'], $data['unavailable_dates']);
+            unset($data['includes'], $data['images'], $data['available_dates']);
 
             $tour->update($data);
 
@@ -89,15 +89,15 @@ final class TourController extends Controller
                 }
             }
 
-            if ($unavailableDates !== null) {
-                $tour->unavailableDates()->delete();
-                foreach ($unavailableDates as $date) {
-                    $tour->unavailableDates()->create(['date' => $date]);
+            if ($availableDates !== null) {
+                $tour->availableDates()->delete();
+                foreach ($availableDates as $date) {
+                    $tour->availableDates()->create(['date' => $date]);
                 }
             }
         });
 
-        $tour->load(['includes', 'images', 'unavailableDates', 'approvedReviews']);
+        $tour->load(['includes', 'images', 'availableDates', 'approvedReviews']);
 
         return new TourResource($tour);
     }

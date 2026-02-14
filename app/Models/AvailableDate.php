@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-final class TourUnavailableDate extends Model
+final class AvailableDate extends Model
 {
     protected $fillable = [
-        'tour_id',
         'date',
     ];
 
@@ -21,8 +20,8 @@ final class TourUnavailableDate extends Model
         ];
     }
 
-    public function tour(): BelongsTo
+    public function bookable(): MorphTo
     {
-        return $this->belongsTo(Tour::class);
+        return $this->morphTo();
     }
 }

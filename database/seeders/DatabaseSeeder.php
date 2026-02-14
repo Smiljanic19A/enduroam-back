@@ -70,11 +70,8 @@ final class DatabaseSeeder extends Seeder
             ['path' => 'https://placehold.co/800x600/2d5016/white?text=Trail+2', 'alt' => 'Forest section', 'sort_order' => 2],
         ]);
 
-        $tour1->unavailableDates()->createMany([
-            ['date' => '2026-03-15'],
-            ['date' => '2026-03-22'],
-            ['date' => '2026-04-01'],
-        ]);
+        $tour1->update(['availability_type' => 'weekdays', 'available_weekdays' => [1, 3, 5]]);
+
 
         $tour1->reviews()->createMany([
             ['author' => 'John D.', 'rating' => 5, 'text' => 'Absolutely amazing experience! The trails were incredible.', 'date' => '2026-01-15', 'is_approved' => true],
@@ -124,6 +121,8 @@ final class DatabaseSeeder extends Seeder
             'featured_image' => 'https://placehold.co/800x600/8b4513/white?text=Championship',
             'sort_order' => 1,
         ]);
+
+        $event1->availableDates()->create(['date' => '2026-06-15']);
 
         $event1->includes()->createMany([
             ['icon' => 'trophy', 'text' => 'Prizes for top 3', 'sort_order' => 1],

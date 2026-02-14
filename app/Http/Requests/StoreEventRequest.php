@@ -38,6 +38,11 @@ final class StoreEventRequest extends FormRequest
             'images.*.path' => ['required_with:images', 'string', 'max:2048'],
             'images.*.alt' => ['nullable', 'string', 'max:255'],
             'images.*.sort_order' => ['sometimes', 'integer'],
+            'availability_type' => ['sometimes', 'in:all,specific_dates,weekdays'],
+            'available_weekdays' => ['nullable', 'array'],
+            'available_weekdays.*' => ['integer', 'min:0', 'max:6'],
+            'available_dates' => ['sometimes', 'array'],
+            'available_dates.*' => ['date'],
         ];
     }
 }

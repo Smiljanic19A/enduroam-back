@@ -23,7 +23,7 @@ final class TourController extends Controller
 
     public function show(Tour $tour): TourResource
     {
-        $tour->load(['includes', 'images', 'unavailableDates', 'approvedReviews']);
+        $tour->load(['includes', 'images', 'availableDates', 'approvedReviews']);
 
         return new TourResource($tour);
     }

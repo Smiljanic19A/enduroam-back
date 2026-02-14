@@ -25,11 +25,11 @@ final class TourResource extends JsonResource
             'featuredImage' => presigned_url($this->featured_image),
             'sortOrder' => $this->sort_order,
             'isActive' => $this->is_active,
+            'availabilityType' => $this->availability_type,
+            'availableWeekdays' => $this->available_weekdays,
+            'availableDates' => $this->whenLoaded('availableDates', fn () => $this->availableDates->pluck('date')->map(fn ($d) => $d->format('Y-m-d'))),
             'includes' => IncludeItemResource::collection($this->whenLoaded('includes')),
             'images' => ImageResource::collection($this->whenLoaded('images')),
-            'unavailableDates' => $this->whenLoaded('unavailableDates', function () {
-                return $this->unavailableDates->pluck('date')->map(fn ($d) => $d->format('Y-m-d'));
-            }),
             'reviews' => ReviewResource::collection($this->whenLoaded('approvedReviews')),
             'reviewCount' => $this->when(
                 $this->approvedReviews !== null && $this->relationLoaded('approvedReviews'),

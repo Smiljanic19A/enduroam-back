@@ -7,7 +7,9 @@ namespace App\Services;
 use App\Models\Booking;
 use App\Models\Event;
 use App\Models\Tour;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 final class BookingService
 {
@@ -21,6 +23,14 @@ final class BookingService
             $bookable = $bookableType === Tour::class
                 ? Tour::findOrFail($data['bookable_id'])
                 : Event::findOrFail($data['bookable_id']);
+
+            $startDate = Carbon::parse($data['start_date']);
+
+            if (! $this->isDateAvailable($bookable, $startDate)) {
+                throw ValidationException::withMessages([
+                    'start_date' => ['The selected date is not available for booking.'],
+                ]);
+            }
 
             $totalPrice = (float) $bookable->price * $data['number_of_guests'];
 
@@ -52,5 +62,20 @@ final class BookingService
         $booking->update(['status' => $status]);
 
         return $booking->fresh('bookable');
+    }
+
+    private function isDateAvailable(Tour|Event $bookable, Carbon $date): bool
+    {
+        $type = $bookable->availability_type ?? 'all';
+
+        return match ($type) {
+            'all' => true,
+            'specific_dates' => $bookable->availableDates()
+                ->whereDate('date', $date)
+                ->exists(),
+            'weekdays' => is_array($bookable->available_weekdays)
+                && in_array($date->dayOfWeek, $bookable->available_weekdays, true),
+            default => true,
+        };
     }
 }

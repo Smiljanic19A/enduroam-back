@@ -17,7 +17,7 @@ final class EventController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        $events = Event::with(['includes', 'images', 'approvedReviews'])
+        $events = Event::with(['includes', 'images', 'availableDates', 'approvedReviews'])
             ->ordered()
             ->get();
 
@@ -30,8 +30,9 @@ final class EventController extends Controller
             $data = $request->validated();
             $includes = $data['includes'] ?? [];
             $images = $data['images'] ?? [];
+            $availableDates = $data['available_dates'] ?? [];
 
-            unset($data['includes'], $data['images']);
+            unset($data['includes'], $data['images'], $data['available_dates']);
 
             if (! isset($data['spots_left'])) {
                 $data['spots_left'] = $data['max_participants'];
@@ -47,17 +48,21 @@ final class EventController extends Controller
                 $event->images()->create($image);
             }
 
+            foreach ($availableDates as $date) {
+                $event->availableDates()->create(['date' => $date]);
+            }
+
             return $event;
         });
 
-        $event->load(['includes', 'images', 'approvedReviews']);
+        $event->load(['includes', 'images', 'availableDates', 'approvedReviews']);
 
         return new EventResource($event);
     }
 
     public function show(Event $event): EventResource
     {
-        $event->load(['includes', 'images', 'approvedReviews', 'bookings']);
+        $event->load(['includes', 'images', 'availableDates', 'approvedReviews', 'bookings']);
 
         return new EventResource($event);
     }
@@ -68,8 +73,9 @@ final class EventController extends Controller
             $data = $request->validated();
             $includes = $data['includes'] ?? null;
             $images = $data['images'] ?? null;
+            $availableDates = $data['available_dates'] ?? null;
 
-            unset($data['includes'], $data['images']);
+            unset($data['includes'], $data['images'], $data['available_dates']);
 
             $event->update($data);
 
@@ -86,9 +92,16 @@ final class EventController extends Controller
                     $event->images()->create($image);
                 }
             }
+
+            if ($availableDates !== null) {
+                $event->availableDates()->delete();
+                foreach ($availableDates as $date) {
+                    $event->availableDates()->create(['date' => $date]);
+                }
+            }
         });
 
-        $event->load(['includes', 'images', 'approvedReviews']);
+        $event->load(['includes', 'images', 'availableDates', 'approvedReviews']);
 
         return new EventResource($event);
     }

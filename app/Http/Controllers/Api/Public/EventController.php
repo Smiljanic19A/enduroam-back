@@ -24,7 +24,7 @@ final class EventController extends Controller
 
     public function show(Event $event): EventResource
     {
-        $event->load(['includes', 'images', 'approvedReviews']);
+        $event->load(['includes', 'images', 'availableDates', 'approvedReviews']);
 
         return new EventResource($event);
     }

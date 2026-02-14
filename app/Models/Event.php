@@ -31,6 +31,8 @@ final class Event extends Model
         'sort_order',
         'is_active',
         'is_featured',
+        'availability_type',
+        'available_weekdays',
     ];
 
     protected function casts(): array
@@ -44,6 +46,7 @@ final class Event extends Model
             'sort_order' => 'integer',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'available_weekdays' => 'array',
         ];
     }
 
@@ -62,6 +65,11 @@ final class Event extends Model
     public function images(): HasMany
     {
         return $this->hasMany(EventImage::class)->orderBy('sort_order');
+    }
+
+    public function availableDates(): MorphMany
+    {
+        return $this->morphMany(AvailableDate::class, 'bookable')->orderBy('date');
     }
 
     public function reviews(): MorphMany

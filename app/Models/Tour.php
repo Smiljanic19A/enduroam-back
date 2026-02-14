@@ -28,6 +28,8 @@ final class Tour extends Model
         'featured_image',
         'sort_order',
         'is_active',
+        'availability_type',
+        'available_weekdays',
     ];
 
     protected function casts(): array
@@ -38,6 +40,7 @@ final class Tour extends Model
             'max_participants' => 'integer',
             'sort_order' => 'integer',
             'is_active' => 'boolean',
+            'available_weekdays' => 'array',
         ];
     }
 
@@ -58,9 +61,9 @@ final class Tour extends Model
         return $this->hasMany(TourImage::class)->orderBy('sort_order');
     }
 
-    public function unavailableDates(): HasMany
+    public function availableDates(): MorphMany
     {
-        return $this->hasMany(TourUnavailableDate::class)->orderBy('date');
+        return $this->morphMany(AvailableDate::class, 'bookable')->orderBy('date');
     }
 
     public function reviews(): MorphMany
