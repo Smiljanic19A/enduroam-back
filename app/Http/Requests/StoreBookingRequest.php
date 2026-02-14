@@ -24,7 +24,7 @@ final class StoreBookingRequest extends FormRequest
             'guest_phone' => ['required', 'string', 'max:50'],
             'number_of_guests' => ['required', 'integer', 'min:1'],
             'special_requests' => ['nullable', 'string', 'max:2000'],
-            'payment_method' => ['required', 'in:stripe,paypal,bank_transfer'],
+            'payment_method' => ['required', 'in:paypal,ips'],
         ];
     }
 }

@@ -74,7 +74,7 @@ final class BookingService
                 ->whereDate('date', $date)
                 ->exists(),
             'weekdays' => is_array($bookable->available_weekdays)
-                && in_array($date->dayOfWeek, $bookable->available_weekdays, true),
+                && in_array($date->dayOfWeek, array_map('intval', $bookable->available_weekdays)),
             default => true,
         };
     }
