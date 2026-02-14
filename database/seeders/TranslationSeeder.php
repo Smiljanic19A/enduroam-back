@@ -9,7 +9,7 @@ use Illuminate\Database\Seeder;
 
 final class TranslationSeeder extends Seeder
 {
-    private const LOCALES = ['en', 'de', 'es', 'fr', 'it', 'ru'];
+    private const LOCALES = ['en', 'de', 'es', 'fr', 'it', 'ru', 'sr'];
 
     public function run(): void
     {
