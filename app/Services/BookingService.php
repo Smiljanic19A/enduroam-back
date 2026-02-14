@@ -27,8 +27,9 @@ final class BookingService
             $startDate = Carbon::parse($data['start_date']);
 
             if (! $this->isDateAvailable($bookable, $startDate)) {
+                $type = $bookable->availability_type ?? 'all';
                 throw ValidationException::withMessages([
-                    'start_date' => ['The selected date is not available for booking.'],
+                    'start_date' => ["The selected date is not available for booking. (type: {$type}, weekdays: " . json_encode($bookable->available_weekdays) . ", dayOfWeek: {$startDate->dayOfWeek})"],
                 ]);
             }
 
