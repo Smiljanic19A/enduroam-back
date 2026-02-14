@@ -13,6 +13,10 @@ use Illuminate\Validation\ValidationException;
 
 final class BookingService
 {
+    public function __construct(
+        private readonly NotificationService $notificationService
+    ) {}
+
     public function createBooking(array $data): Booking
     {
         return DB::transaction(function () use ($data): Booking {
@@ -27,9 +31,8 @@ final class BookingService
             $startDate = Carbon::parse($data['start_date']);
 
             if (! $this->isDateAvailable($bookable, $startDate)) {
-                $type = $bookable->availability_type ?? 'all';
                 throw ValidationException::withMessages([
-                    'start_date' => ["The selected date is not available for booking. (type: {$type}, weekdays: " . json_encode($bookable->available_weekdays) . ", dayOfWeek: {$startDate->dayOfWeek})"],
+                    'start_date' => ['The selected date is not available for booking.'],
                 ]);
             }
 
@@ -53,6 +56,20 @@ final class BookingService
             if ($bookable instanceof Event && $bookable->spots_left !== null) {
                 $bookable->decrement('spots_left', $data['number_of_guests']);
             }
+
+            $this->notificationService->create(
+                type: 'new_booking',
+                title: "New booking from {$booking->guest_name}",
+                body: "{$booking->number_of_guests} guest(s) for {$bookable->name}",
+                data: [
+                    'booking_id' => $booking->id,
+                    'bookable_type' => $data['bookable_type'],
+                    'bookable_name' => $bookable->name,
+                    'guest_name' => $booking->guest_name,
+                    'total_price' => (float) $booking->total_price,
+                    'currency' => $booking->currency,
+                ],
+            );
 
             return $booking->load('bookable');
         });

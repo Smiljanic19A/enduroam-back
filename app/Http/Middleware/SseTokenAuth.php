@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+final class SseTokenAuth
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        if ($request->has('token') && ! $request->bearerToken()) {
+            $request->headers->set('Authorization', 'Bearer '.$request->query('token'));
+        }
+
+        return $next($request);
+    }
+}

@@ -137,5 +137,13 @@ Route::prefix('v1')->group(function (): void {
         // File Upload (Wasabi S3)
         Route::post('/upload', [Admin\UploadController::class, 'store'])->name('upload.store');
         Route::delete('/upload', [Admin\UploadController::class, 'destroy'])->name('upload.destroy');
+
+        // Notifications
+        Route::get('/notifications', [Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/stream', [Admin\NotificationController::class, 'stream'])
+            ->middleware(\App\Http\Middleware\SseTokenAuth::class)
+            ->name('notifications.stream');
+        Route::delete('/notifications/{notification}', [Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
+        Route::delete('/notifications', [Admin\NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
     });
 });
