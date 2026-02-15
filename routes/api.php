@@ -140,10 +140,10 @@ Route::prefix('v1')->group(function (): void {
 
         // Notifications
         Route::get('/notifications', [Admin\NotificationController::class, 'index'])->name('notifications.index');
-        Route::get('/notifications/stream', [Admin\NotificationController::class, 'stream'])
-            ->middleware(\App\Http\Middleware\SseTokenAuth::class)
-            ->name('notifications.stream');
         Route::delete('/notifications/{notification}', [Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
         Route::delete('/notifications', [Admin\NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
     });
+
+    // SSE stream - simple token auth
+    Route::get('/admin/notifications/stream', [Admin\NotificationController::class, 'stream'])->name('admin.notifications.stream');
 });

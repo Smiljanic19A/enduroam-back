@@ -9,11 +9,14 @@ use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class NotificationController extends Controller
 {
+    private const STREAM_TOKEN = 'enduroam-sse-2026-secret';
+
     public function __construct(
         private readonly NotificationService $notificationService
     ) {}
@@ -25,8 +28,12 @@ final class NotificationController extends Controller
         );
     }
 
-    public function stream(): StreamedResponse
+    public function stream(Request $request): StreamedResponse|JsonResponse
     {
+        if ($request->query('token') !== self::STREAM_TOKEN) {
+            return response()->json(['message' => 'Unauthorized.'], 401);
+        }
+
         return $this->notificationService->stream();
     }
 
