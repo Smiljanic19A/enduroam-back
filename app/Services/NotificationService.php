@@ -109,6 +109,7 @@ final class NotificationService
         $response->headers->set('Cache-Control', 'no-cache');
         $response->headers->set('Connection', 'keep-alive');
         $response->headers->set('X-Accel-Buffering', 'no');
+        $response->headers->set('Access-Control-Allow-Origin', config('app.frontend_url', 'https://enduroam.com'));
 
         return $response;
     }
