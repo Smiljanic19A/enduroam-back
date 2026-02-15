@@ -143,7 +143,4 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('/notifications/{notification}', [Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
         Route::delete('/notifications', [Admin\NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
     });
-
-    // SSE stream - simple token auth
-    Route::get('/admin/notifications/stream', [Admin\NotificationController::class, 'stream'])->name('admin.notifications.stream');
 });
