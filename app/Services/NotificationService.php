@@ -30,9 +30,15 @@ final class NotificationService
         $response = new StreamedResponse(function (): void {
             set_time_limit(0);
 
-            if (ob_get_level()) {
-                ob_end_clean();
+            // Kill ALL output buffering levels
+            while (ob_get_level() > 0) {
+                @ob_end_flush();
             }
+            ob_implicit_flush(true);
+
+            // Force headers out with a comment
+            echo ": connected\n\n";
+            flush();
 
             // Send initial batch
             $notifications = Notification::orderBy('id')->get();
@@ -56,7 +62,6 @@ final class NotificationService
                 echo "data: []\n\n";
             }
 
-            @ob_flush();
             flush();
 
             $heartbeatCounter = 0;
@@ -88,7 +93,6 @@ final class NotificationService
                 }
 
                 if ($newNotifications->isNotEmpty()) {
-                    @ob_flush();
                     flush();
                 }
 
@@ -96,7 +100,6 @@ final class NotificationService
                 $heartbeatCounter++;
                 if ($heartbeatCounter >= 5) {
                     echo ": heartbeat\n\n";
-                    @ob_flush();
                     flush();
                     $heartbeatCounter = 0;
                 }
