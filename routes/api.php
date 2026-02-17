@@ -41,6 +41,7 @@ Route::prefix('v1')->group(function (): void {
 
     // Videos
     Route::get('/videos', [PublicApi\VideoController::class, 'index'])->name('public.videos.index');
+    Route::get('/videos/featured', [PublicApi\VideoController::class, 'featured'])->name('public.videos.featured');
 
     // Sponsors
     Route::get('/sponsors', [PublicApi\SponsorController::class, 'index'])->name('public.sponsors.index');
@@ -95,6 +96,7 @@ Route::prefix('v1')->group(function (): void {
 
         // Videos CRUD
         Route::apiResource('videos', Admin\VideoController::class)->names('videos');
+        Route::post('/videos/{video}/set-featured', [Admin\VideoController::class, 'setFeatured'])->name('videos.setFeatured');
 
         // Sponsors CRUD
         Route::apiResource('sponsors', Admin\SponsorController::class)->names('sponsors');

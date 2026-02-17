@@ -16,6 +16,7 @@ final class VideoResource extends JsonResource
             'url' => $this->url,
             'title' => $this->title,
             'sortOrder' => $this->sort_order,
+            'isFeatured' => $this->is_featured,
         ];
     }
 }

@@ -10,6 +10,7 @@ use App\Models\Video;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 
 final class VideoController extends Controller
 {
@@ -56,5 +57,15 @@ final class VideoController extends Controller
         $video->delete();
 
         return response()->json(['message' => 'Video deleted successfully.']);
+    }
+
+    public function setFeatured(Video $video): VideoResource
+    {
+        DB::transaction(function () use ($video): void {
+            Video::where('is_featured', true)->update(['is_featured' => false]);
+            $video->update(['is_featured' => true]);
+        });
+
+        return new VideoResource($video);
     }
 }
