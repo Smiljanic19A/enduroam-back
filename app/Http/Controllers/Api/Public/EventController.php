@@ -16,7 +16,7 @@ final class EventController extends Controller
     {
         $events = Event::active()
             ->ordered()
-            ->with(['includes.translations', 'images', 'translations'])
+            ->with(['includes.translations', 'images', 'availableDates', 'translations'])
             ->get();
 
         return EventResource::collection($events);
@@ -33,7 +33,7 @@ final class EventController extends Controller
     {
         $event = Event::active()
             ->where('is_featured', true)
-            ->with(['includes.translations', 'images', 'translations'])
+            ->with(['includes.translations', 'images', 'availableDates', 'translations'])
             ->first();
 
         if (! $event) {
