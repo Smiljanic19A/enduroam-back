@@ -18,6 +18,8 @@ final class BannerResource extends JsonResource
             'title' => $this->title,
             'text' => $this->text,
             'textPosition' => $this->text_position,
+            'textColor' => $this->text_color,
+            'titleSize' => $this->title_size,
             'focalPoint' => $this->focal_point,
             'overlayOpacity' => $this->overlay_opacity,
             'imageFit' => $this->image_fit,

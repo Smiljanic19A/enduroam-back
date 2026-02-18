@@ -15,6 +15,8 @@ final class Banner extends Model
         'title',
         'text',
         'text_position',
+        'text_color',
+        'title_size',
         'focal_point',
         'overlay_opacity',
         'image_fit',

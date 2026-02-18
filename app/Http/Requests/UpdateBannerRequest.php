@@ -21,6 +21,8 @@ final class UpdateBannerRequest extends FormRequest
             'title' => ['sometimes', 'nullable', 'string', 'max:255'],
             'text' => ['sometimes', 'nullable', 'string'],
             'text_position' => ['sometimes', 'nullable', 'string', 'in:top-left,top-center,top-right,center-left,center,center-right,bottom-left,bottom-center,bottom-right'],
+            'text_color' => ['sometimes', 'string', 'in:white,black'],
+            'title_size' => ['sometimes', 'string', 'in:small,medium,large'],
             'focal_point' => ['sometimes', 'nullable', 'string', 'in:top-left,top-center,top-right,center-left,center,center-right,bottom-left,bottom-center,bottom-right'],
             'overlay_opacity' => ['sometimes', 'integer', 'min:0', 'max:100'],
             'image_fit' => ['sometimes', 'string', 'in:cover,contain'],
