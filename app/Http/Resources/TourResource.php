@@ -38,13 +38,13 @@ final class TourResource extends JsonResource
             'availableDates' => $this->whenLoaded('availableDates', fn () => $this->availableDates->pluck('date')->map(fn ($d) => $d->format('Y-m-d'))),
             'includes' => IncludeItemResource::collection($this->whenLoaded('includes')),
             'images' => ImageResource::collection($this->whenLoaded('images')),
-            'reviews' => ReviewResource::collection($this->whenLoaded('approvedReviews')),
+            'reviews' => $this->when($isAdmin && $this->relationLoaded('approvedReviews'), fn () => ReviewResource::collection($this->approvedReviews)),
             'reviewCount' => $this->when(
-                $this->approvedReviews !== null && $this->relationLoaded('approvedReviews'),
+                $isAdmin && $this->approvedReviews !== null && $this->relationLoaded('approvedReviews'),
                 fn () => $this->approvedReviews->count()
             ),
             'averageRating' => $this->when(
-                $this->approvedReviews !== null && $this->relationLoaded('approvedReviews'),
+                $isAdmin && $this->approvedReviews !== null && $this->relationLoaded('approvedReviews'),
                 fn () => $this->approvedReviews->count() > 0
                     ? round($this->approvedReviews->avg('rating'), 1)
                     : 0

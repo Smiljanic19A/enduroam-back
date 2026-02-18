@@ -15,7 +15,7 @@ final class TourController extends Controller
     {
         $tours = Tour::active()
             ->ordered()
-            ->with(['includes.translations', 'images', 'approvedReviews', 'translations'])
+            ->with(['includes.translations', 'images', 'translations'])
             ->get();
 
         return TourResource::collection($tours);
@@ -23,7 +23,7 @@ final class TourController extends Controller
 
     public function show(Tour $tour): TourResource
     {
-        $tour->load(['includes.translations', 'images', 'availableDates', 'approvedReviews', 'translations']);
+        $tour->load(['includes.translations', 'images', 'availableDates', 'translations']);
 
         return new TourResource($tour);
     }

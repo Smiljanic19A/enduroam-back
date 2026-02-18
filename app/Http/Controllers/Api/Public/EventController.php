@@ -16,7 +16,7 @@ final class EventController extends Controller
     {
         $events = Event::active()
             ->ordered()
-            ->with(['includes.translations', 'images', 'approvedReviews', 'translations'])
+            ->with(['includes.translations', 'images', 'translations'])
             ->get();
 
         return EventResource::collection($events);
@@ -24,7 +24,7 @@ final class EventController extends Controller
 
     public function show(Event $event): EventResource
     {
-        $event->load(['includes.translations', 'images', 'availableDates', 'approvedReviews', 'translations']);
+        $event->load(['includes.translations', 'images', 'availableDates', 'translations']);
 
         return new EventResource($event);
     }
@@ -33,7 +33,7 @@ final class EventController extends Controller
     {
         $event = Event::active()
             ->where('is_featured', true)
-            ->with(['includes.translations', 'images', 'approvedReviews', 'translations'])
+            ->with(['includes.translations', 'images', 'translations'])
             ->first();
 
         if (! $event) {

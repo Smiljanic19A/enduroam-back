@@ -61,6 +61,9 @@ Route::prefix('v1')->group(function (): void {
     // Booking
     Route::post('/bookings', [PublicApi\BookingController::class, 'store'])->name('public.bookings.store');
 
+    // Reviews (public submission)
+    Route::post('/reviews', [PublicApi\ReviewController::class, 'store'])->name('public.reviews.store');
+
     // Settings (public)
     Route::get('/settings/contact', [PublicApi\SettingController::class, 'contact'])->name('public.settings.contact');
 
