@@ -169,108 +169,17 @@ final class EventController extends Controller
         return new EventResource($event);
     }
 
-    public function translate(Event $event, TranslationAIService $service): EventResource|JsonResponse
+    public function translate(Event $event): JsonResponse
     {
-        $event->load('includes');
+        TranslateContentJob::dispatch(Event::class, [$event->id]);
 
-        $content = [
-            'name' => $event->name,
-            'description' => $event->description,
-            'full_description' => $event->full_description ?? '',
-            'includes' => $event->includes->pluck('text')->toArray(),
-        ];
-
-        $result = $service->translate($content);
-
-        if (empty($result)) {
-            return response()->json(['message' => 'Translation failed. Check logs for details.'], 500);
-        }
-
-        DB::transaction(function () use ($event, $result): void {
-            foreach ($result as $locale => $trans) {
-                $event->translations()->updateOrCreate(
-                    ['locale' => $locale],
-                    [
-                        'name' => $trans['name'],
-                        'description' => $trans['description'],
-                        'full_description' => $trans['full_description'] ?? null,
-                    ]
-                );
-
-                if (! empty($trans['includes'])) {
-                    foreach ($event->includes as $index => $include) {
-                        if (isset($trans['includes'][$index])) {
-                            $include->translations()->updateOrCreate(
-                                ['locale' => $locale],
-                                ['text' => $trans['includes'][$index]]
-                            );
-                        }
-                    }
-                }
-            }
-        });
-
-        $event->load(['includes.translations', 'images', 'availableDates', 'approvedReviews', 'translations']);
-
-        return new EventResource($event);
+        return response()->json(['message' => 'Translation started. You will be notified when it completes.']);
     }
 
-    public function translateAll(TranslationAIService $service): JsonResponse
+    public function translateAll(): JsonResponse
     {
-        $events = Event::with('includes')->get();
-        $translated = 0;
-        $failed = 0;
-        $errors = [];
+        TranslateContentJob::dispatch(Event::class);
 
-        foreach ($events as $event) {
-            $content = [
-                'name' => $event->name,
-                'description' => $event->description,
-                'full_description' => $event->full_description ?? '',
-                'includes' => $event->includes->pluck('text')->toArray(),
-            ];
-
-            $result = $service->translate($content);
-
-            if (empty($result)) {
-                $failed++;
-                $errors[] = "Event #{$event->id} ({$event->name}): Translation failed";
-
-                continue;
-            }
-
-            DB::transaction(function () use ($event, $result): void {
-                foreach ($result as $locale => $trans) {
-                    $event->translations()->updateOrCreate(
-                        ['locale' => $locale],
-                        [
-                            'name' => $trans['name'],
-                            'description' => $trans['description'],
-                            'full_description' => $trans['full_description'] ?? null,
-                        ]
-                    );
-
-                    if (! empty($trans['includes'])) {
-                        foreach ($event->includes as $index => $include) {
-                            if (isset($trans['includes'][$index])) {
-                                $include->translations()->updateOrCreate(
-                                    ['locale' => $locale],
-                                    ['text' => $trans['includes'][$index]]
-                                );
-                            }
-                        }
-                    }
-                }
-            });
-
-            $translated++;
-        }
-
-        return response()->json([
-            'message' => "Translation complete. {$translated} translated, {$failed} failed.",
-            'translated' => $translated,
-            'failed' => $failed,
-            'errors' => $errors,
-        ]);
+        return response()->json(['message' => 'Translating all events in the background. You will be notified when it completes.']);
     }
 }
