@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class TourInclude extends Model
 {
@@ -26,5 +27,10 @@ final class TourInclude extends Model
     public function tour(): BelongsTo
     {
         return $this->belongsTo(Tour::class);
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(TourIncludeTranslation::class);
     }
 }

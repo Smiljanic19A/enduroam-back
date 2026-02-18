@@ -51,6 +51,21 @@ final class Tour extends Model
         );
     }
 
+    public function translations(): HasMany
+    {
+        return $this->hasMany(TourTranslation::class);
+    }
+
+    public function getTranslation(string $locale): ?TourTranslation
+    {
+        if ($locale === 'en') {
+            return null;
+        }
+
+        return $this->translations->firstWhere('locale', $locale)
+            ?? $this->translations->firstWhere('locale', 'en');
+    }
+
     public function includes(): HasMany
     {
         return $this->hasMany(TourInclude::class)->orderBy('sort_order');

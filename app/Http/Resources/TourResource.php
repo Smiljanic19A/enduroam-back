@@ -11,11 +11,19 @@ final class TourResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return [
+        $locale = $request->query('locale', 'en');
+        $translation = $this->relationLoaded('translations')
+            ? $this->getTranslation($locale)
+            : null;
+
+        $isAdmin = str_starts_with($request->route()?->getName() ?? '', 'admin.');
+
+        $data = [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'fullDescription' => $this->full_description,
+            'name' => $translation?->name ?? $this->name,
+            'description' => $translation?->description ?? $this->description,
+            'fullDescription' => $translation?->full_description ?? $this->full_description,
+            'locale' => $translation ? $translation->locale : 'en',
             'duration' => $this->duration,
             'difficulty' => $this->difficulty,
             'price' => (float) $this->price,
@@ -44,5 +52,17 @@ final class TourResource extends JsonResource
             'createdAt' => $this->created_at?->toISOString(),
             'updatedAt' => $this->updated_at?->toISOString(),
         ];
+
+        if ($isAdmin && $this->relationLoaded('translations')) {
+            $data['translations'] = $this->translations
+                ->groupBy('locale')
+                ->map(fn ($items) => [
+                    'name' => $items->first()->name,
+                    'description' => $items->first()->description,
+                    'fullDescription' => $items->first()->full_description,
+                ]);
+        }
+
+        return $data;
     }
 }

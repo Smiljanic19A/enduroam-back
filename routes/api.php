@@ -81,10 +81,14 @@ Route::prefix('v1')->group(function (): void {
 
         // Tours CRUD
         Route::apiResource('tours', Admin\TourController::class)->names('tours');
+        Route::post('/tours/{tour}/translate', [Admin\TourController::class, 'translate'])->name('tours.translate');
+        Route::post('/tours/translate-all', [Admin\TourController::class, 'translateAll'])->name('tours.translateAll');
 
         // Events CRUD
         Route::apiResource('events', Admin\EventController::class)->names('events');
         Route::post('/events/{event}/set-featured', [Admin\EventController::class, 'setFeatured'])->name('events.setFeatured');
+        Route::post('/events/{event}/translate', [Admin\EventController::class, 'translate'])->name('events.translate');
+        Route::post('/events/translate-all', [Admin\EventController::class, 'translateAll'])->name('events.translateAll');
 
         // Articles CRUD
         Route::apiResource('articles', Admin\ArticleController::class)->names('articles');

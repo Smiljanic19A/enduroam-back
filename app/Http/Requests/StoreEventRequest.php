@@ -43,6 +43,12 @@ final class StoreEventRequest extends FormRequest
             'available_weekdays.*' => ['integer', 'min:0', 'max:6'],
             'available_dates' => ['sometimes', 'array'],
             'available_dates.*' => ['date'],
+            'translations' => ['sometimes', 'array'],
+            'translations.*.name' => ['required', 'string', 'max:255'],
+            'translations.*.description' => ['required', 'string'],
+            'translations.*.full_description' => ['nullable', 'string'],
+            'includes.*.translations' => ['sometimes', 'array'],
+            'includes.*.translations.*.text' => ['required', 'string', 'max:255'],
         ];
     }
 }

@@ -57,6 +57,21 @@ final class Event extends Model
         );
     }
 
+    public function translations(): HasMany
+    {
+        return $this->hasMany(EventTranslation::class);
+    }
+
+    public function getTranslation(string $locale): ?EventTranslation
+    {
+        if ($locale === 'en') {
+            return null;
+        }
+
+        return $this->translations->firstWhere('locale', $locale)
+            ?? $this->translations->firstWhere('locale', 'en');
+    }
+
     public function includes(): HasMany
     {
         return $this->hasMany(EventInclude::class)->orderBy('sort_order');

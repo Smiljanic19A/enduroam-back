@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class EventInclude extends Model
 {
@@ -26,5 +27,10 @@ final class EventInclude extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(EventIncludeTranslation::class);
     }
 }
