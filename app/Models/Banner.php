@@ -12,10 +12,12 @@ final class Banner extends Model
     protected $fillable = [
         'type',
         'image',
+        'mobile_image',
         'title',
         'text',
         'text_position',
         'text_color',
+        'title_color',
         'title_size',
         'focal_point',
         'overlay_opacity',
@@ -38,6 +40,13 @@ final class Banner extends Model
     }
 
     protected function image(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => to_s3_path($value),
+        );
+    }
+
+    protected function mobileImage(): Attribute
     {
         return Attribute::make(
             set: fn (?string $value) => to_s3_path($value),
