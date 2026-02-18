@@ -70,7 +70,7 @@ Route::prefix('v1')->group(function (): void {
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware('auth:sanctum')->prefix('admin')->name('admin.')->group(function (): void {
+    Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
 
         // Auth
         Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');

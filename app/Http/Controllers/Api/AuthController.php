@@ -27,9 +27,10 @@ final class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'is_admin' => false,
         ]);
 
-        $token = $user->createToken('admin-token')->plainTextToken;
+        $token = $user->createToken('user-token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
@@ -37,6 +38,7 @@ final class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'is_admin' => false,
             ],
         ], 201);
     }
@@ -60,6 +62,7 @@ final class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'is_admin' => $user->is_admin,
             ],
         ]);
     }
@@ -79,6 +82,7 @@ final class AuthController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'is_admin' => $user->is_admin,
         ]);
     }
 }
