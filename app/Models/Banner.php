@@ -15,6 +15,10 @@ final class Banner extends Model
         'title',
         'text',
         'text_position',
+        'focal_point',
+        'overlay_opacity',
+        'image_fit',
+        'animation',
         'cta_text',
         'cta_href',
         'sort_order',
@@ -25,7 +29,9 @@ final class Banner extends Model
     {
         return [
             'sort_order' => 'integer',
+            'overlay_opacity' => 'integer',
             'is_active' => 'boolean',
+            'animation' => 'array',
         ];
     }
 
