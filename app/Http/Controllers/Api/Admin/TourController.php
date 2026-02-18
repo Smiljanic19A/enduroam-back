@@ -153,108 +153,17 @@ final class TourController extends Controller
         return response()->json(['message' => 'Tour deleted successfully.']);
     }
 
-    public function translate(Tour $tour, TranslationAIService $service): TourResource|JsonResponse
+    public function translate(Tour $tour): JsonResponse
     {
-        $tour->load('includes');
+        TranslateContentJob::dispatch(Tour::class, [$tour->id]);
 
-        $content = [
-            'name' => $tour->name,
-            'description' => $tour->description,
-            'full_description' => $tour->full_description ?? '',
-            'includes' => $tour->includes->pluck('text')->toArray(),
-        ];
-
-        $result = $service->translate($content);
-
-        if (empty($result)) {
-            return response()->json(['message' => 'Translation failed. Check logs for details.'], 500);
-        }
-
-        DB::transaction(function () use ($tour, $result): void {
-            foreach ($result as $locale => $trans) {
-                $tour->translations()->updateOrCreate(
-                    ['locale' => $locale],
-                    [
-                        'name' => $trans['name'],
-                        'description' => $trans['description'],
-                        'full_description' => $trans['full_description'] ?? null,
-                    ]
-                );
-
-                if (! empty($trans['includes'])) {
-                    foreach ($tour->includes as $index => $include) {
-                        if (isset($trans['includes'][$index])) {
-                            $include->translations()->updateOrCreate(
-                                ['locale' => $locale],
-                                ['text' => $trans['includes'][$index]]
-                            );
-                        }
-                    }
-                }
-            }
-        });
-
-        $tour->load(['includes.translations', 'images', 'availableDates', 'approvedReviews', 'translations']);
-
-        return new TourResource($tour);
+        return response()->json(['message' => 'Translation started. You will be notified when it completes.']);
     }
 
-    public function translateAll(TranslationAIService $service): JsonResponse
+    public function translateAll(): JsonResponse
     {
-        $tours = Tour::with('includes')->get();
-        $translated = 0;
-        $failed = 0;
-        $errors = [];
+        TranslateContentJob::dispatch(Tour::class);
 
-        foreach ($tours as $tour) {
-            $content = [
-                'name' => $tour->name,
-                'description' => $tour->description,
-                'full_description' => $tour->full_description ?? '',
-                'includes' => $tour->includes->pluck('text')->toArray(),
-            ];
-
-            $result = $service->translate($content);
-
-            if (empty($result)) {
-                $failed++;
-                $errors[] = "Tour #{$tour->id} ({$tour->name}): Translation failed";
-
-                continue;
-            }
-
-            DB::transaction(function () use ($tour, $result): void {
-                foreach ($result as $locale => $trans) {
-                    $tour->translations()->updateOrCreate(
-                        ['locale' => $locale],
-                        [
-                            'name' => $trans['name'],
-                            'description' => $trans['description'],
-                            'full_description' => $trans['full_description'] ?? null,
-                        ]
-                    );
-
-                    if (! empty($trans['includes'])) {
-                        foreach ($tour->includes as $index => $include) {
-                            if (isset($trans['includes'][$index])) {
-                                $include->translations()->updateOrCreate(
-                                    ['locale' => $locale],
-                                    ['text' => $trans['includes'][$index]]
-                                );
-                            }
-                        }
-                    }
-                }
-            });
-
-            $translated++;
-        }
-
-        return response()->json([
-            'message' => "Translation complete. {$translated} translated, {$failed} failed.",
-            'translated' => $translated,
-            'failed' => $failed,
-            'errors' => $errors,
-        ]);
+        return response()->json(['message' => 'Translating all tours in the background. You will be notified when it completes.']);
     }
 }
