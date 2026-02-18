@@ -61,6 +61,9 @@ Route::prefix('v1')->group(function (): void {
     // Booking
     Route::post('/bookings', [PublicApi\BookingController::class, 'store'])->name('public.bookings.store');
 
+    // Settings (public)
+    Route::get('/settings/contact', [PublicApi\SettingController::class, 'contact'])->name('public.settings.contact');
+
     /*
     |--------------------------------------------------------------------------
     | Admin API Routes (Auth Required)
@@ -139,6 +142,10 @@ Route::prefix('v1')->group(function (): void {
         // File Upload (Wasabi S3)
         Route::post('/upload', [Admin\UploadController::class, 'store'])->name('upload.store');
         Route::delete('/upload', [Admin\UploadController::class, 'destroy'])->name('upload.destroy');
+
+        // Site Settings
+        Route::get('/settings', [Admin\SettingController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update');
 
         // Notifications
         Route::get('/notifications', [Admin\NotificationController::class, 'index'])->name('notifications.index');

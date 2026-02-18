@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\Faq;
 use App\Models\GalleryImage;
 use App\Models\Page;
+use App\Models\SiteSetting;
 use App\Models\Sponsor;
 use App\Models\Tour;
 use App\Models\User;
@@ -232,6 +233,21 @@ final class DatabaseSeeder extends Seeder
             'answer' => 'Yes, we can provide enduro bikes for an additional fee. Please mention this when booking so we can ensure availability.',
             'sort_order' => 4,
         ]);
+
+        // Site Settings (contact defaults)
+        $contactSettings = [
+            'contact_email' => 'info@enduroam.com',
+            'contact_phone' => '+382 69 123 456',
+            'whatsapp_number' => '+382691234567',
+            'address' => 'Montenegro',
+            'social_instagram' => 'https://instagram.com/enduroam',
+            'social_facebook' => 'https://facebook.com/enduroam',
+            'social_youtube' => 'https://youtube.com/@enduroam',
+        ];
+
+        foreach ($contactSettings as $key => $value) {
+            SiteSetting::firstOrCreate(['key' => $key], ['value' => $value]);
+        }
 
         // Translations
         $this->call(TranslationSeeder::class);
