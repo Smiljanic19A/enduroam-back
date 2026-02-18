@@ -31,6 +31,14 @@ final class TranslateContentJob implements ShouldQueue
     public function handle(TranslationAIService $service, NotificationService $notifications): void
     {
         $type = class_basename($this->modelClass);
+        $isBulk = $this->modelIds === null;
+
+        Log::info("TranslateContentJob: started", [
+            'type' => $type,
+            'mode' => $isBulk ? 'bulk' : 'single',
+            'model_ids' => $this->modelIds,
+        ]);
+
         $query = $this->modelClass::with('includes');
 
         if ($this->modelIds !== null) {
@@ -38,26 +46,37 @@ final class TranslateContentJob implements ShouldQueue
         }
 
         $items = $query->get();
+
+        Log::info("TranslateContentJob: loaded {$items->count()} {$type}(s) from DB");
+
         $translated = 0;
         $failed = 0;
         $errors = [];
 
-        foreach ($items as $item) {
-            $content = [
+        foreach ($items as $index => $item) {
+            $context = "{$type} #{$item->id} ({$item->name})";
+            $position = ($index + 1) . '/' . $items->count();
+
+            Log::info("TranslateContentJob: [{$position}] translating {$context}");
+
+            $result = $service->translate([
                 'name' => $item->name,
                 'description' => $item->description,
                 'full_description' => $item->full_description ?? '',
                 'includes' => $item->includes->pluck('text')->toArray(),
-            ];
-
-            $result = $service->translate($content);
+            ], $context);
 
             if (empty($result)) {
                 $failed++;
-                $errors[] = "{$type} #{$item->id} ({$item->name})";
+                $errors[] = $context;
+                Log::warning("TranslateContentJob: [{$position}] FAILED {$context}");
 
                 continue;
             }
+
+            Log::info("TranslateContentJob: [{$position}] saving translations for {$context}", [
+                'locales' => array_keys($result),
+            ]);
 
             DB::transaction(function () use ($item, $result): void {
                 foreach ($result as $locale => $trans) {
@@ -71,11 +90,11 @@ final class TranslateContentJob implements ShouldQueue
                     );
 
                     if (! empty($trans['includes'])) {
-                        foreach ($item->includes as $index => $include) {
-                            if (isset($trans['includes'][$index])) {
+                        foreach ($item->includes as $idx => $include) {
+                            if (isset($trans['includes'][$idx])) {
                                 $include->translations()->updateOrCreate(
                                     ['locale' => $locale],
-                                    ['text' => $trans['includes'][$index]]
+                                    ['text' => $trans['includes'][$idx]]
                                 );
                             }
                         }
@@ -83,6 +102,7 @@ final class TranslateContentJob implements ShouldQueue
                 }
             });
 
+            Log::info("TranslateContentJob: [{$position}] saved {$context}");
             $translated++;
         }
 
@@ -93,15 +113,26 @@ final class TranslateContentJob implements ShouldQueue
                 ? "Translation failed for {$type}: {$items->first()->name}"
                 : "{$type} translation failed — {$failed} items could not be translated";
 
-            $notifications->create('translation_error', $title, implode(', ', $errors));
-            Log::error("TranslateContentJob: All failed for {$type}", ['errors' => $errors]);
+            $notification = $notifications->create('translation_error', $title, implode(', ', $errors));
+            Log::error("TranslateContentJob: finished with ALL FAILURES", [
+                'type' => $type,
+                'failed' => $failed,
+                'errors' => $errors,
+                'notification_id' => $notification->id,
+            ]);
         } else {
             $title = $isSingle
                 ? "Translations ready for {$type}: {$items->first()->name}"
                 : "{$type} translations complete — {$translated} done" . ($failed > 0 ? ", {$failed} failed" : '');
 
             $body = $failed > 0 ? 'Failed: ' . implode(', ', $errors) : null;
-            $notifications->create('translation_complete', $title, $body);
+            $notification = $notifications->create('translation_complete', $title, $body);
+            Log::info("TranslateContentJob: finished", [
+                'type' => $type,
+                'translated' => $translated,
+                'failed' => $failed,
+                'notification_id' => $notification->id,
+            ]);
         }
     }
 }
