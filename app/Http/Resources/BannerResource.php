@@ -11,11 +11,15 @@ final class BannerResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $isAdmin = $request->routeIs('admin.*');
+
         return [
             'id' => $this->id,
             'type' => $this->type,
             'image' => presigned_url($this->image),
+            'imagePath' => $this->when($isAdmin, $this->image),
             'mobileImage' => presigned_url($this->mobile_image),
+            'mobileImagePath' => $this->when($isAdmin, $this->mobile_image),
             'title' => $this->title,
             'text' => $this->text,
             'textPosition' => $this->text_position,
@@ -31,7 +35,7 @@ final class BannerResource extends JsonResource
                 'href' => $this->cta_href,
             ] : null,
             'sortOrder' => $this->sort_order,
-            'isActive' => $this->when($request->routeIs('admin.*'), $this->is_active),
+            'isActive' => $this->when($isAdmin, $this->is_active),
         ];
     }
 }

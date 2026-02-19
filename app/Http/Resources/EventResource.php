@@ -33,6 +33,7 @@ final class EventResource extends JsonResource
             'maxParticipants' => $this->max_participants,
             'spotsLeft' => $this->spots_left,
             'featuredImage' => presigned_url($this->featured_image),
+            'featuredImagePath' => $this->when($isAdmin, $this->featured_image),
             'sortOrder' => $this->sort_order,
             'isActive' => $this->is_active,
             'isFeatured' => $this->is_featured,

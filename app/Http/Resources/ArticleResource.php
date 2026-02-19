@@ -20,6 +20,7 @@ final class ArticleResource extends JsonResource
                 $this->content
             ),
             'image' => presigned_url($this->image),
+            'imagePath' => $this->when($request->routeIs('admin.*'), $this->image),
             'date' => $this->date?->format('Y-m-d'),
             'author' => $this->author,
             'isPublished' => $this->when($request->routeIs('admin.*'), $this->is_published),

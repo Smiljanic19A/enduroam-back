@@ -11,9 +11,12 @@ final class ImageResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $isAdmin = $request->routeIs('admin.*');
+
         return [
             'id' => $this->id,
             'path' => presigned_url($this->path),
+            'rawPath' => $this->when($isAdmin, $this->path),
             'alt' => $this->alt,
             'sortOrder' => $this->sort_order,
         ];

@@ -150,6 +150,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/upload', [Admin\UploadController::class, 'store'])->name('upload.store');
         Route::delete('/upload', [Admin\UploadController::class, 'destroy'])->name('upload.destroy');
 
+        // Image Proxy (for CropperJS CORS workaround)
+        Route::get('/images/proxy', Admin\ImageProxyController::class)->name('images.proxy');
+
         // Site Settings
         Route::get('/settings', [Admin\SettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update');

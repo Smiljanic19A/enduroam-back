@@ -11,10 +11,13 @@ final class SponsorResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $isAdmin = $request->routeIs('admin.*');
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'logo' => presigned_url($this->logo),
+            'logoPath' => $this->when($isAdmin, $this->logo),
             'url' => $this->url,
             'sortOrder' => $this->sort_order,
         ];

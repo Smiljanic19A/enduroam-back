@@ -31,6 +31,7 @@ final class TourResource extends JsonResource
             'location' => $this->location,
             'maxParticipants' => $this->max_participants,
             'featuredImage' => presigned_url($this->featured_image),
+            'featuredImagePath' => $this->when($isAdmin, $this->featured_image),
             'sortOrder' => $this->sort_order,
             'isActive' => $this->is_active,
             'availabilityType' => $this->availability_type,
