@@ -29,7 +29,6 @@ final class ImageProxyController extends Controller
 
         return response($disk->get($path), 200, [
             'Content-Type' => $disk->mimeType($path) ?: 'application/octet-stream',
-            'Access-Control-Allow-Origin' => '*',
             'Cache-Control' => 'public, max-age=3600',
         ]);
     }
