@@ -141,6 +141,204 @@ PROMPT;
         }
     }
 
+    /**
+     * Translate banner content (title, text, cta_text) from English to all target locales.
+     *
+     * @param  array{title: ?string, text: ?string, cta_text: ?string}  $content
+     * @param  string  $context
+     * @return array<string, array{title: string, text: string, cta_text: string}>
+     */
+    public function translateBanner(array $content, string $context = ''): array
+    {
+        $logPrefix = $context ? "[{$context}]" : '[unknown]';
+
+        $localeNames = [
+            'de' => 'German', 'es' => 'Spanish', 'fr' => 'French',
+            'it' => 'Italian', 'ru' => 'Russian', 'sr' => 'Serbian',
+        ];
+
+        $localeList = implode(', ', array_map(
+            fn (string $code, string $name) => "{$code} ({$name})",
+            array_keys($localeNames),
+            $localeNames
+        ));
+
+        $systemPrompt = "You are a professional translator for an enduro motorcycle tourism website. Translate content accurately, preserving HTML formatting tags (like <p>, <strong>, <em>, <ul>, <li>, <h2>, <h3>, <a>) and maintaining the adventurous, professional tone. Do not translate brand names or proper nouns.";
+
+        $userPrompt = <<<PROMPT
+Translate the following English banner content into these languages: {$localeList}
+
+## Title:
+{$content['title']}
+
+## Subtitle/Text (may contain HTML):
+{$content['text']}
+
+## CTA Button Text:
+{$content['cta_text']}
+
+Respond with a JSON object where each key is a locale code, containing: title, text, cta_text.
+PROMPT;
+
+        $localeSchema = [
+            'type' => 'object',
+            'properties' => [
+                'title' => ['type' => 'string'],
+                'text' => ['type' => 'string'],
+                'cta_text' => ['type' => 'string'],
+            ],
+            'required' => ['title', 'text', 'cta_text'],
+            'additionalProperties' => false,
+        ];
+
+        $properties = [];
+        $required = [];
+        foreach (self::TARGET_LOCALES as $locale) {
+            $properties[$locale] = $localeSchema;
+            $required[] = $locale;
+        }
+
+        $schema = [
+            'type' => 'object',
+            'properties' => $properties,
+            'required' => $required,
+            'additionalProperties' => false,
+        ];
+
+        $model = config('services.openai.model', 'gpt-4o');
+
+        Log::info("Banner translation {$logPrefix}: sending to OpenAI", ['model' => $model]);
+
+        try {
+            $response = OpenAI::chat()->create([
+                'model' => $model,
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => $userPrompt],
+                ],
+                'response_format' => [
+                    'type' => 'json_schema',
+                    'json_schema' => [
+                        'name' => 'banner_translations',
+                        'strict' => true,
+                        'schema' => $schema,
+                    ],
+                ],
+                'temperature' => 0.3,
+            ]);
+
+            $result = json_decode($response->choices[0]->message->content, true);
+
+            if (! is_array($result)) {
+                Log::error("Banner translation {$logPrefix}: invalid JSON response");
+
+                return [];
+            }
+
+            Log::info("Banner translation {$logPrefix}: success", ['locales' => array_keys($result)]);
+
+            return $result;
+        } catch (\Throwable $e) {
+            Log::error("Banner translation {$logPrefix}: OpenAI error", ['error' => $e->getMessage()]);
+
+            return [];
+        }
+    }
+
+    /**
+     * Translate UI strings for a single target locale.
+     *
+     * @param  array<string, string>  $strings  Flat map of 'group.key' => 'English value'
+     * @param  string  $targetLocale
+     * @return array<string, string>  Flat map of 'group.key' => 'translated value'
+     */
+    public function translateUIStrings(array $strings, string $targetLocale): array
+    {
+        if (empty($strings)) {
+            return [];
+        }
+
+        $localeNames = [
+            'de' => 'German', 'es' => 'Spanish', 'fr' => 'French',
+            'it' => 'Italian', 'ru' => 'Russian', 'sr' => 'Serbian',
+        ];
+
+        $targetName = $localeNames[$targetLocale] ?? $targetLocale;
+
+        $systemPrompt = "You are a professional translator for an enduro motorcycle tourism website. Translate UI strings from English to {$targetName}. Keep translations concise and natural for a website UI. Preserve any {placeholder} variables exactly as-is (e.g. {year}, {count}). Do not translate brand names.";
+
+        $stringsList = json_encode($strings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        $userPrompt = <<<PROMPT
+Translate the following English UI strings to {$targetName}.
+
+The input is a JSON object where keys are "group.key" identifiers and values are English strings.
+Return a JSON object with the same keys and translated values.
+Preserve any {placeholder} variables exactly as they appear.
+
+{$stringsList}
+PROMPT;
+
+        $keyList = array_keys($strings);
+        $properties = [];
+        foreach ($keyList as $key) {
+            $properties[$key] = ['type' => 'string'];
+        }
+
+        $schema = [
+            'type' => 'object',
+            'properties' => $properties,
+            'required' => $keyList,
+            'additionalProperties' => false,
+        ];
+
+        $model = config('services.openai.model', 'gpt-4o');
+
+        Log::info("UI string translation: sending batch to OpenAI", [
+            'locale' => $targetLocale,
+            'count' => count($strings),
+            'model' => $model,
+        ]);
+
+        try {
+            $response = OpenAI::chat()->create([
+                'model' => $model,
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => $userPrompt],
+                ],
+                'response_format' => [
+                    'type' => 'json_schema',
+                    'json_schema' => [
+                        'name' => 'ui_translations',
+                        'strict' => true,
+                        'schema' => $schema,
+                    ],
+                ],
+                'temperature' => 0.2,
+            ]);
+
+            $result = json_decode($response->choices[0]->message->content, true);
+
+            if (! is_array($result)) {
+                Log::error("UI string translation: invalid JSON for locale {$targetLocale}");
+
+                return [];
+            }
+
+            Log::info("UI string translation: success", [
+                'locale' => $targetLocale,
+                'translated' => count($result),
+            ]);
+
+            return $result;
+        } catch (\Throwable $e) {
+            Log::error("UI string translation: OpenAI error for locale {$targetLocale}", ['error' => $e->getMessage()]);
+
+            return [];
+        }
+    }
+
     private function buildJsonSchema(int $includesCount): array
     {
         $localeSchema = [

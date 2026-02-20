@@ -101,6 +101,7 @@ Route::prefix('v1')->group(function (): void {
 
         // Banners CRUD
         Route::apiResource('banners', Admin\BannerController::class)->names('banners');
+        Route::post('/banners/{banner}/translate', [Admin\BannerController::class, 'translate'])->name('banners.translate');
 
         // Gallery CRUD
         Route::apiResource('gallery', Admin\GalleryController::class)
@@ -148,6 +149,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/translations/groups', [Admin\TranslationController::class, 'groups'])->name('translations.groups');
         Route::put('/translations/bulk', [Admin\TranslationController::class, 'bulkUpdate'])->name('translations.bulkUpdate');
         Route::post('/translations/publish', [Admin\TranslationController::class, 'publishAll'])->name('translations.publishAll');
+        Route::post('/translations/auto-translate', [Admin\TranslationController::class, 'autoTranslate'])->name('translations.autoTranslate');
 
         // File Upload (Wasabi S3)
         Route::post('/upload', [Admin\UploadController::class, 'store'])->name('upload.store');

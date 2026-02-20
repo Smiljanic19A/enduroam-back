@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\TranslateUIStringsJob;
 use App\Models\Translation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -101,6 +102,16 @@ final class TranslationController extends Controller
             'message' => 'All translations published.',
             'locales' => $locales,
         ]);
+    }
+
+    /**
+     * Dispatch background job to auto-translate all missing UI strings.
+     */
+    public function autoTranslate(): JsonResponse
+    {
+        TranslateUIStringsJob::dispatch();
+
+        return response()->json(['message' => 'Auto-translation queued. You will be notified when complete.'], 202);
     }
 
     /**

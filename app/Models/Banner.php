@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Banner extends Model
 {
@@ -51,6 +52,11 @@ final class Banner extends Model
         return Attribute::make(
             set: fn (?string $value) => to_s3_path($value),
         );
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(BannerTranslation::class);
     }
 
     public function scopeActive($query)

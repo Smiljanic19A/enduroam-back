@@ -13,7 +13,8 @@ final class BannerController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        $banners = Banner::active()
+        $banners = Banner::with('translations')
+            ->active()
             ->ordered()
             ->get();
 

@@ -37,6 +37,10 @@ final class StoreBannerRequest extends FormRequest
             'cta_href' => ['nullable', 'string', 'max:2048'],
             'sort_order' => ['sometimes', 'integer', 'min:0'],
             'is_active' => ['sometimes', 'boolean'],
+            'translations' => ['sometimes', 'array'],
+            'translations.*.title' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'translations.*.text' => ['sometimes', 'nullable', 'string'],
+            'translations.*.cta_text' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }
 }
