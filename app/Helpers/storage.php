@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 if (! function_exists('presigned_url')) {
     function presigned_url(?string $path): ?string
@@ -12,6 +13,17 @@ if (! function_exists('presigned_url')) {
         }
 
         return Storage::disk('s3')->temporaryUrl($path, now()->addMinutes(60));
+    }
+}
+
+if (! function_exists('proxy_url')) {
+    function proxy_url(?string $path): ?string
+    {
+        if (empty($path)) {
+            return null;
+        }
+
+        return URL::temporarySignedRoute('images.proxy', now()->addMinutes(60), ['path' => $path]);
     }
 }
 

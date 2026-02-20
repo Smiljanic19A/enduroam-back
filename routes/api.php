@@ -67,6 +67,9 @@ Route::prefix('v1')->group(function (): void {
     // Settings (public)
     Route::get('/settings/contact', [PublicApi\SettingController::class, 'contact'])->name('public.settings.contact');
 
+    // Image Proxy (CropperJS CORS workaround — public, images are not secret)
+    Route::get('/images/proxy', Admin\ImageProxyController::class)->name('images.proxy');
+
     /*
     |--------------------------------------------------------------------------
     | Admin API Routes (Auth Required)
@@ -150,8 +153,6 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/upload', [Admin\UploadController::class, 'store'])->name('upload.store');
         Route::delete('/upload', [Admin\UploadController::class, 'destroy'])->name('upload.destroy');
 
-        // Image Proxy (for CropperJS CORS workaround)
-        Route::get('/images/proxy', Admin\ImageProxyController::class)->name('images.proxy');
 
         // Site Settings
         Route::get('/settings', [Admin\SettingController::class, 'index'])->name('settings.index');
