@@ -22,6 +22,7 @@ final class SettingController extends Controller
         'social_instagram',
         'social_facebook',
         'social_youtube',
+        'social_tiktok',
     ];
 
     public function index(): JsonResponse
@@ -48,6 +49,7 @@ final class SettingController extends Controller
             'social_instagram' => ['sometimes', 'nullable', 'url', 'max:2048'],
             'social_facebook' => ['sometimes', 'nullable', 'url', 'max:2048'],
             'social_youtube' => ['sometimes', 'nullable', 'url', 'max:2048'],
+            'social_tiktok' => ['sometimes', 'nullable', 'url', 'max:2048'],
         ]);
 
         foreach ($data as $key => $value) {
