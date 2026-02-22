@@ -49,6 +49,7 @@ final class BannerResource extends JsonResource
             'titleSize' => $this->title_size,
             'focalPoint' => $this->focal_point,
             'overlayOpacity' => $this->overlay_opacity,
+            'brightness' => $this->brightness,
             'imageFit' => $this->image_fit,
             'animation' => $this->animation,
             'cta' => $this->cta_text ? [
@@ -97,6 +98,7 @@ final class BannerResource extends JsonResource
             'titleSize' => $this->title_size,
             'focalPoint' => $this->focal_point,
             'overlayOpacity' => $this->overlay_opacity,
+            'brightness' => $this->brightness,
             'imageFit' => $this->image_fit,
             'animation' => $this->animation,
             'cta' => $ctaText ? [

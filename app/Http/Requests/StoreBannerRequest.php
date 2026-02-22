@@ -27,6 +27,7 @@ final class StoreBannerRequest extends FormRequest
             'title_size' => ['sometimes', 'string', 'in:small,medium,large'],
             'focal_point' => ['sometimes', 'string', 'in:top-left,top-center,top-right,center-left,center,center-right,bottom-left,bottom-center,bottom-right'],
             'overlay_opacity' => ['sometimes', 'integer', 'min:0', 'max:100'],
+            'brightness' => ['sometimes', 'integer', 'min:0', 'max:200'],
             'image_fit' => ['sometimes', 'string', 'in:cover,contain'],
             'animation' => ['sometimes', 'nullable', 'array'],
             'animation.type' => ['required_with:animation', 'string', 'in:zoom,pan,parallax,static'],

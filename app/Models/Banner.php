@@ -22,6 +22,7 @@ final class Banner extends Model
         'title_size',
         'focal_point',
         'overlay_opacity',
+        'brightness',
         'image_fit',
         'animation',
         'cta_text',
