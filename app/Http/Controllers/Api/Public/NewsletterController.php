@@ -9,6 +9,7 @@ use App\Http\Requests\NewsletterRequest;
 use App\Models\NewsletterSubscriber;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 final class NewsletterController extends Controller
 {
@@ -37,5 +38,18 @@ final class NewsletterController extends Controller
         return response()->json([
             'message' => 'You have been subscribed to our newsletter.',
         ], 201);
+    }
+
+    public function unsubscribe(Request $request, NewsletterSubscriber $subscriber): JsonResponse
+    {
+        if (! $request->hasValidSignature()) {
+            abort(403, 'Invalid or expired unsubscribe link.');
+        }
+
+        $subscriber->delete();
+
+        return response()->json([
+            'message' => 'You have been unsubscribed from our newsletter.',
+        ]);
     }
 }

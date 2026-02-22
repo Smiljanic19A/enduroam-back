@@ -6,10 +6,12 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContactMessageResource;
+use App\Mail\ContactMessageReply;
 use App\Models\ContactMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Mail;
 
 final class ContactMessageController extends Controller
 {
@@ -33,6 +35,23 @@ final class ContactMessageController extends Controller
         }
 
         return new ContactMessageResource($contactMessage);
+    }
+
+    public function reply(Request $request, ContactMessage $contactMessage): ContactMessageResource
+    {
+        $data = $request->validate([
+            'message' => ['required', 'string'],
+        ]);
+
+        $contactMessage->update([
+            'reply_message' => $data['message'],
+            'replied_at' => now(),
+        ]);
+
+        Mail::to($contactMessage->email)
+            ->send(new ContactMessageReply($contactMessage, $data['message']));
+
+        return new ContactMessageResource($contactMessage->fresh());
     }
 
     public function destroy(ContactMessage $contactMessage): JsonResponse

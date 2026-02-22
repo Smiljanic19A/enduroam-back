@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Mail\BookingConfirmation;
+use App\Mail\BookingStatusUpdate;
 use App\Models\Booking;
 use App\Models\Event;
 use App\Models\Tour;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 final class BookingService
@@ -71,6 +74,9 @@ final class BookingService
                 ],
             );
 
+            Mail::to($booking->guest_email)
+                ->send(new BookingConfirmation($booking));
+
             return $booking->load('bookable');
         });
     }
@@ -79,7 +85,12 @@ final class BookingService
     {
         $booking->update(['status' => $status]);
 
-        return $booking->fresh('bookable');
+        $booking = $booking->fresh('bookable');
+
+        Mail::to($booking->guest_email)
+            ->send(new BookingStatusUpdate($booking));
+
+        return $booking;
     }
 
     private function isDateAvailable(Tour|Event $bookable, Carbon $date): bool

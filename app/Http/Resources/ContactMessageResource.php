@@ -18,6 +18,8 @@ final class ContactMessageResource extends JsonResource
             'subject' => $this->subject,
             'message' => $this->message,
             'isRead' => $this->is_read,
+            'replyMessage' => $this->reply_message,
+            'repliedAt' => $this->replied_at?->toISOString(),
             'createdAt' => $this->created_at?->toISOString(),
         ];
     }

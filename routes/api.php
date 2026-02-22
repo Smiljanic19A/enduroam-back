@@ -57,6 +57,7 @@ Route::prefix('v1')->group(function (): void {
 
     // Newsletter
     Route::post('/newsletter/subscribe', [PublicApi\NewsletterController::class, 'subscribe'])->name('public.newsletter.subscribe');
+    Route::get('/newsletter/unsubscribe/{subscriber}', [PublicApi\NewsletterController::class, 'unsubscribe'])->name('public.newsletter.unsubscribe');
 
     // Booking
     Route::post('/bookings', [PublicApi\BookingController::class, 'store'])->name('public.bookings.store');
@@ -126,6 +127,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/bookings', [Admin\BookingController::class, 'index'])->name('bookings.index');
         Route::get('/bookings/{booking}', [Admin\BookingController::class, 'show'])->name('bookings.show');
         Route::patch('/bookings/{booking}/status', [Admin\BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+        Route::post('/bookings/{booking}/resend-confirmation', [Admin\BookingController::class, 'resendConfirmation'])->name('bookings.resendConfirmation');
         Route::delete('/bookings/{booking}', [Admin\BookingController::class, 'destroy'])->name('bookings.destroy');
 
         // Reviews
@@ -138,10 +140,12 @@ Route::prefix('v1')->group(function (): void {
         // Contact Messages
         Route::get('/contact-messages', [Admin\ContactMessageController::class, 'index'])->name('contactMessages.index');
         Route::get('/contact-messages/{contactMessage}', [Admin\ContactMessageController::class, 'show'])->name('contactMessages.show');
+        Route::post('/contact-messages/{contactMessage}/reply', [Admin\ContactMessageController::class, 'reply'])->name('contactMessages.reply');
         Route::delete('/contact-messages/{contactMessage}', [Admin\ContactMessageController::class, 'destroy'])->name('contactMessages.destroy');
 
         // Newsletter Subscribers
         Route::get('/newsletter-subscribers', [Admin\NewsletterController::class, 'index'])->name('newsletter.index');
+        Route::post('/newsletter/send', [Admin\NewsletterController::class, 'send'])->name('newsletter.send');
         Route::delete('/newsletter-subscribers/{subscriber}', [Admin\NewsletterController::class, 'destroy'])->name('newsletter.destroy');
 
         // Translations

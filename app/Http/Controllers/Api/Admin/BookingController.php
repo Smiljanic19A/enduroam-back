@@ -6,11 +6,13 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BookingResource;
+use App\Mail\BookingConfirmation;
 use App\Models\Booking;
 use App\Services\BookingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Mail;
 
 final class BookingController extends Controller
 {
@@ -54,6 +56,16 @@ final class BookingController extends Controller
         $booking = $this->bookingService->updateStatus($booking, $data['status']);
 
         return new BookingResource($booking);
+    }
+
+    public function resendConfirmation(Booking $booking): JsonResponse
+    {
+        $booking->load('bookable');
+
+        Mail::to($booking->guest_email)
+            ->send(new BookingConfirmation($booking));
+
+        return response()->json(['message' => 'Confirmation email sent.']);
     }
 
     public function destroy(Booking $booking): JsonResponse
