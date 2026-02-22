@@ -161,6 +161,9 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('/upload', [Admin\UploadController::class, 'destroy'])->name('upload.destroy');
 
 
+        // Users CRUD
+        Route::apiResource('users', Admin\UserController::class)->names('users');
+
         // Site Settings
         Route::get('/settings', [Admin\SettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update');

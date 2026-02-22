@@ -18,6 +18,12 @@ final class EnsureAdmin
             ], 403);
         }
 
+        if ($request->user()->role === 'read' && ! $request->isMethod('get')) {
+            return response()->json([
+                'message' => 'Write access required.',
+            ], 403);
+        }
+
         return $next($request);
     }
 }
