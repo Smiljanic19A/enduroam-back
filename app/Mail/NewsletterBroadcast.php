@@ -34,6 +34,9 @@ final class NewsletterBroadcast extends Mailable implements ShouldQueue
     {
         return new Content(
             view: 'emails.newsletter',
+            with: [
+                'subject' => $this->subject,
+            ],
         );
     }
 }
