@@ -16,10 +16,12 @@ final class NewsletterBroadcast extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public function __construct(
-        public readonly string $subject,
+        string $subject,
         public readonly string $body,
         public readonly string $unsubscribeUrl
-    ) {}
+    ) {
+        $this->subject = $subject;
+    }
 
     public function envelope(): Envelope
     {
