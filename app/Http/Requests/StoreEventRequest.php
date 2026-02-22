@@ -30,6 +30,8 @@ final class StoreEventRequest extends FormRequest
             'featured_image' => ['nullable', 'string', 'max:2048'],
             'sort_order' => ['sometimes', 'integer', 'min:0'],
             'is_active' => ['sometimes', 'boolean'],
+            'automatic_payment' => ['sometimes', 'boolean'],
+            'deposit_percentage' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'includes' => ['sometimes', 'array'],
             'includes.*.icon' => ['sometimes', 'string', 'max:100'],
             'includes.*.text' => ['required_with:includes', 'string', 'max:255'],

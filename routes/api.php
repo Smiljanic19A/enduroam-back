@@ -128,6 +128,7 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/bookings/{booking}', [Admin\BookingController::class, 'show'])->name('bookings.show');
         Route::patch('/bookings/{booking}/status', [Admin\BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
         Route::post('/bookings/{booking}/resend-confirmation', [Admin\BookingController::class, 'resendConfirmation'])->name('bookings.resendConfirmation');
+        Route::post('/bookings/{booking}/send-payment-email', [Admin\BookingController::class, 'sendPaymentEmail'])->name('bookings.sendPaymentEmail');
         Route::delete('/bookings/{booking}', [Admin\BookingController::class, 'destroy'])->name('bookings.destroy');
 
         // Reviews

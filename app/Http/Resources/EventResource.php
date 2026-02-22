@@ -37,6 +37,8 @@ final class EventResource extends JsonResource
             'sortOrder' => $this->sort_order,
             'isActive' => $this->is_active,
             'isFeatured' => $this->is_featured,
+            'automaticPayment' => $this->automatic_payment,
+            'depositPercentage' => $this->deposit_percentage,
             'availabilityType' => $this->availability_type,
             'availableWeekdays' => $this->available_weekdays,
             'availableDates' => $this->whenLoaded('availableDates', fn () => $this->availableDates->pluck('date')->map(fn ($d) => $d->format('Y-m-d'))),

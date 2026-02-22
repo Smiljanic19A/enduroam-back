@@ -24,6 +24,8 @@ final class Booking extends Model
         'payment_method',
         'status',
         'total_price',
+        'deposit_amount',
+        'payment_email_sent_at',
         'currency',
     ];
 
@@ -33,6 +35,8 @@ final class Booking extends Model
             'start_date' => 'date',
             'number_of_guests' => 'integer',
             'total_price' => 'decimal:2',
+            'deposit_amount' => 'decimal:2',
+            'payment_email_sent_at' => 'datetime',
         ];
     }
 

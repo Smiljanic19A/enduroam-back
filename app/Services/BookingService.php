@@ -40,6 +40,8 @@ final class BookingService
             }
 
             $totalPrice = (float) $bookable->price * $data['number_of_guests'];
+            $depositPercentage = $bookable->deposit_percentage ?? 100;
+            $depositAmount = round($totalPrice * ($depositPercentage / 100), 2);
 
             $booking = Booking::create([
                 'bookable_type' => $bookableType,
@@ -53,6 +55,7 @@ final class BookingService
                 'payment_method' => $data['payment_method'],
                 'status' => 'pending',
                 'total_price' => $totalPrice,
+                'deposit_amount' => $depositAmount,
                 'currency' => $bookable->currency,
             ]);
 

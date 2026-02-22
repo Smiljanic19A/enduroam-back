@@ -28,6 +28,8 @@ final class Tour extends Model
         'featured_image',
         'sort_order',
         'is_active',
+        'automatic_payment',
+        'deposit_percentage',
         'availability_type',
         'available_weekdays',
     ];
@@ -40,6 +42,8 @@ final class Tour extends Model
             'max_participants' => 'integer',
             'sort_order' => 'integer',
             'is_active' => 'boolean',
+            'automatic_payment' => 'boolean',
+            'deposit_percentage' => 'integer',
             'available_weekdays' => 'array',
         ];
     }

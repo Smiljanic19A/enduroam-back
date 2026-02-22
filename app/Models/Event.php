@@ -31,6 +31,8 @@ final class Event extends Model
         'sort_order',
         'is_active',
         'is_featured',
+        'automatic_payment',
+        'deposit_percentage',
         'availability_type',
         'available_weekdays',
     ];
@@ -46,6 +48,8 @@ final class Event extends Model
             'sort_order' => 'integer',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'automatic_payment' => 'boolean',
+            'deposit_percentage' => 'integer',
             'available_weekdays' => 'array',
         ];
     }

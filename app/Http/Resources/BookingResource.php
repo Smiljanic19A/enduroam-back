@@ -30,6 +30,8 @@ final class BookingResource extends JsonResource
             'paymentMethod' => $this->payment_method,
             'status' => $this->status,
             'totalPrice' => (float) $this->total_price,
+            'depositAmount' => $this->deposit_amount ? (float) $this->deposit_amount : null,
+            'paymentEmailSentAt' => $this->payment_email_sent_at?->toISOString(),
             'currency' => $this->currency,
             'createdAt' => $this->created_at?->toISOString(),
             'updatedAt' => $this->updated_at?->toISOString(),

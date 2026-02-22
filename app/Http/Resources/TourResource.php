@@ -34,6 +34,8 @@ final class TourResource extends JsonResource
             'featuredImagePath' => $this->when($isAdmin, $this->featured_image),
             'sortOrder' => $this->sort_order,
             'isActive' => $this->is_active,
+            'automaticPayment' => $this->automatic_payment,
+            'depositPercentage' => $this->deposit_percentage,
             'availabilityType' => $this->availability_type,
             'availableWeekdays' => $this->available_weekdays,
             'availableDates' => $this->whenLoaded('availableDates', fn () => $this->availableDates->pluck('date')->map(fn ($d) => $d->format('Y-m-d'))),

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BookingResource;
 use App\Mail\BookingConfirmation;
+use App\Mail\PaymentLinkEmail;
 use App\Models\Booking;
 use App\Services\BookingService;
 use Illuminate\Http\JsonResponse;
@@ -66,6 +67,23 @@ final class BookingController extends Controller
             ->send(new BookingConfirmation($booking));
 
         return response()->json(['message' => 'Confirmation email sent.']);
+    }
+
+    public function sendPaymentEmail(Request $request, Booking $booking): BookingResource
+    {
+        $data = $request->validate([
+            'message' => ['required', 'string'],
+            'payment_link' => ['required', 'url'],
+        ]);
+
+        $booking->load('bookable');
+
+        Mail::to($booking->guest_email)
+            ->send(new PaymentLinkEmail($booking, $data['message'], $data['payment_link']));
+
+        $booking->update(['payment_email_sent_at' => now()]);
+
+        return new BookingResource($booking->fresh('bookable'));
     }
 
     public function destroy(Booking $booking): JsonResponse
