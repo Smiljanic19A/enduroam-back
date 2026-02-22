@@ -4,8 +4,8 @@
 
 @section('content')
 <h2>Booking Status Update</h2>
-<p>Hi {{ $booking->guest_name }},</p>
-<p>Your booking status has been updated to: <span class="badge badge--{{ $booking->status }}">{{ $booking->status }}</span></p>
+
+<div>{!! $body !!}</div>
 
 <table class="detail-table">
     <tr>
@@ -28,7 +28,9 @@
         <td>Total</td>
         <td>{{ $booking->currency }}{{ number_format((float) $booking->total_price, 2) }}</td>
     </tr>
+    <tr>
+        <td>Status</td>
+        <td><span class="badge badge--{{ $booking->status }}">{{ $booking->status }}</span></td>
+    </tr>
 </table>
-
-<p>If you have any questions about this update, please don't hesitate to contact us.</p>
 @endsection

@@ -4,9 +4,8 @@
 
 @section('content')
 <h2>Payment Request</h2>
-<p>Hi {{ $booking->guest_name }},</p>
 
-<div>{!! $customMessage !!}</div>
+<div>{!! $body !!}</div>
 
 <table class="detail-table">
     <tr>
@@ -40,6 +39,4 @@
 <p style="text-align: center; margin: 24px 0;">
     <a href="{{ $paymentLink }}" class="btn">Pay Now</a>
 </p>
-
-<p>If you have any questions, feel free to contact us.</p>
 @endsection

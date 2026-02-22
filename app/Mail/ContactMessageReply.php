@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Mail;
 
 use App\Models\ContactMessage;
+use App\Models\SiteSetting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -15,6 +16,8 @@ use Illuminate\Queue\SerializesModels;
 final class ContactMessageReply extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    public string $body;
 
     public function __construct(
         public readonly ContactMessage $contactMessage,
@@ -30,6 +33,12 @@ final class ContactMessageReply extends Mailable implements ShouldQueue
 
     public function content(): Content
     {
+        // The admin always writes a custom reply, so use replyMessage directly
+        $this->body = $this->replyMessage;
+
+        $senderName = SiteSetting::getValue('email_sender_name', config('mail.from.name'));
+        $this->from(config('mail.from.address'), $senderName);
+
         return new Content(
             view: 'emails.contact-reply',
         );

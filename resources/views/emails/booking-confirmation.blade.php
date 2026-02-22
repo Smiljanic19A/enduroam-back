@@ -4,8 +4,8 @@
 
 @section('content')
 <h2>Booking Confirmation</h2>
-<p>Hi {{ $booking->guest_name }},</p>
-<p>Thank you for your booking! Here are the details:</p>
+
+<div>{!! $body !!}</div>
 
 <table class="detail-table">
     <tr>
@@ -42,6 +42,4 @@
 <p><strong>Special Requests:</strong></p>
 <div class="quote">{{ $booking->special_requests }}</div>
 @endif
-
-<p>We will review your booking and get back to you shortly. If you have any questions, feel free to contact us.</p>
 @endsection

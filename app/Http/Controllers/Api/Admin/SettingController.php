@@ -23,6 +23,14 @@ final class SettingController extends Controller
         'social_facebook',
         'social_youtube',
         'social_tiktok',
+        'email_sender_name',
+        'email_default_payment_link',
+        'email_booking_confirmation',
+        'email_booking_approved',
+        'email_booking_declined',
+        'email_booking_cancelled',
+        'email_payment_link',
+        'email_contact_reply',
     ];
 
     public function index(): JsonResponse
@@ -50,6 +58,14 @@ final class SettingController extends Controller
             'social_facebook' => ['sometimes', 'nullable', 'url', 'max:2048'],
             'social_youtube' => ['sometimes', 'nullable', 'url', 'max:2048'],
             'social_tiktok' => ['sometimes', 'nullable', 'url', 'max:2048'],
+            'email_sender_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'email_default_payment_link' => ['sometimes', 'nullable', 'string', 'max:2048'],
+            'email_booking_confirmation' => ['sometimes', 'nullable', 'string', 'max:10000'],
+            'email_booking_approved' => ['sometimes', 'nullable', 'string', 'max:10000'],
+            'email_booking_declined' => ['sometimes', 'nullable', 'string', 'max:10000'],
+            'email_booking_cancelled' => ['sometimes', 'nullable', 'string', 'max:10000'],
+            'email_payment_link' => ['sometimes', 'nullable', 'string', 'max:10000'],
+            'email_contact_reply' => ['sometimes', 'nullable', 'string', 'max:10000'],
         ]);
 
         foreach ($data as $key => $value) {
