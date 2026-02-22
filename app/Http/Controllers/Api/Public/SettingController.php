@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 final class SettingController extends Controller
 {
     /**
-     * Keys exposed publicly (contact info + socials).
+     * Keys exposed publicly (contact info + socials + payment).
      */
     private const PUBLIC_KEYS = [
         'contact_email',
@@ -22,6 +22,8 @@ final class SettingController extends Controller
         'social_facebook',
         'social_youtube',
         'social_tiktok',
+        'payment_paypal_link',
+        'payment_ips_qr_image',
     ];
 
     public function contact(): JsonResponse

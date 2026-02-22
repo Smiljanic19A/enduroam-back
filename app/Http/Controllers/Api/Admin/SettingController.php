@@ -31,6 +31,8 @@ final class SettingController extends Controller
         'email_booking_cancelled',
         'email_payment_link',
         'email_contact_reply',
+        'payment_paypal_link',
+        'payment_ips_qr_image',
     ];
 
     public function index(): JsonResponse
@@ -66,6 +68,8 @@ final class SettingController extends Controller
             'email_booking_cancelled' => ['sometimes', 'nullable', 'string', 'max:10000'],
             'email_payment_link' => ['sometimes', 'nullable', 'string', 'max:10000'],
             'email_contact_reply' => ['sometimes', 'nullable', 'string', 'max:10000'],
+            'payment_paypal_link' => ['sometimes', 'nullable', 'string', 'max:2048'],
+            'payment_ips_qr_image' => ['sometimes', 'nullable', 'string', 'max:2048'],
         ]);
 
         foreach ($data as $key => $value) {
