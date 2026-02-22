@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FaqResource;
+use App\Jobs\TranslateContentJob;
 use App\Models\Faq;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ final class FaqController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        $faqs = Faq::ordered()->get();
+        $faqs = Faq::with('translations')->ordered()->get();
 
         return FaqResource::collection($faqs);
     }
@@ -35,7 +36,7 @@ final class FaqController extends Controller
 
     public function show(Faq $faq): FaqResource
     {
-        return new FaqResource($faq);
+        return new FaqResource($faq->load('translations'));
     }
 
     public function update(Request $request, Faq $faq): FaqResource
@@ -56,5 +57,19 @@ final class FaqController extends Controller
         $faq->delete();
 
         return response()->json(['message' => 'FAQ deleted successfully.']);
+    }
+
+    public function translate(Faq $faq): JsonResponse
+    {
+        TranslateContentJob::dispatch(Faq::class, [$faq->id]);
+
+        return response()->json(['message' => 'Translation started. You will be notified when it completes.']);
+    }
+
+    public function translateAll(): JsonResponse
+    {
+        TranslateContentJob::dispatch(Faq::class);
+
+        return response()->json(['message' => 'Translating all FAQs in the background. You will be notified when it completes.']);
     }
 }

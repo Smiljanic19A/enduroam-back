@@ -118,6 +118,8 @@ Route::prefix('v1')->group(function (): void {
 
         // FAQs CRUD
         Route::apiResource('faqs', Admin\FaqController::class)->names('faqs');
+        Route::post('/faqs/{faq}/translate', [Admin\FaqController::class, 'translate'])->name('faqs.translate');
+        Route::post('/faqs/translate-all', [Admin\FaqController::class, 'translateAll'])->name('faqs.translateAll');
 
         // Pages (list + toggle visibility)
         Route::get('/pages', [Admin\PageController::class, 'index'])->name('pages.index');

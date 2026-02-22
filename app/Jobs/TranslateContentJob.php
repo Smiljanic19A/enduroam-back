@@ -39,7 +39,12 @@ final class TranslateContentJob implements ShouldQueue
             'model_ids' => $this->modelIds,
         ]);
 
-        $query = $this->modelClass::with('includes');
+        $query = $this->modelClass::query();
+
+        // Only eager-load includes for models that have them
+        if (method_exists($this->modelClass, 'includes')) {
+            $query->with('includes');
+        }
 
         if ($this->modelIds !== null) {
             $query->whereIn('id', $this->modelIds);
@@ -54,17 +59,28 @@ final class TranslateContentJob implements ShouldQueue
         $errors = [];
 
         foreach ($items as $index => $item) {
-            $context = "{$type} #{$item->id} ({$item->name})";
+            // Build context and input based on model type
+            if ($item instanceof \App\Models\Faq) {
+                $context = "{$type} #{$item->id} ({$item->question})";
+                $input = [
+                    'name' => $item->question,
+                    'description' => $item->answer,
+                ];
+            } else {
+                $context = "{$type} #{$item->id} ({$item->name})";
+                $input = [
+                    'name' => $item->name,
+                    'description' => $item->description,
+                    'full_description' => $item->full_description ?? '',
+                    'includes' => $item->includes?->pluck('text')->toArray() ?? [],
+                ];
+            }
+
             $position = ($index + 1) . '/' . $items->count();
 
             Log::info("TranslateContentJob: [{$position}] translating {$context}");
 
-            $result = $service->translate([
-                'name' => $item->name,
-                'description' => $item->description,
-                'full_description' => $item->full_description ?? '',
-                'includes' => $item->includes->pluck('text')->toArray(),
-            ], $context);
+            $result = $service->translate($input, $context);
 
             if (empty($result)) {
                 $failed++;
@@ -80,22 +96,34 @@ final class TranslateContentJob implements ShouldQueue
 
             DB::transaction(function () use ($item, $result): void {
                 foreach ($result as $locale => $trans) {
-                    $item->translations()->updateOrCreate(
-                        ['locale' => $locale],
-                        [
-                            'name' => $trans['name'],
-                            'description' => $trans['description'],
-                            'full_description' => $trans['full_description'] ?? null,
-                        ]
-                    );
+                    if ($item instanceof \App\Models\Faq) {
+                        // FAQ translations
+                        $item->translations()->updateOrCreate(
+                            ['locale' => $locale],
+                            [
+                                'question' => $trans['name'],
+                                'answer' => $trans['description'],
+                            ]
+                        );
+                    } else {
+                        // Tour/Event translations
+                        $item->translations()->updateOrCreate(
+                            ['locale' => $locale],
+                            [
+                                'name' => $trans['name'],
+                                'description' => $trans['description'],
+                                'full_description' => $trans['full_description'] ?? null,
+                            ]
+                        );
 
-                    if (! empty($trans['includes'])) {
-                        foreach ($item->includes as $idx => $include) {
-                            if (isset($trans['includes'][$idx])) {
-                                $include->translations()->updateOrCreate(
-                                    ['locale' => $locale],
-                                    ['text' => $trans['includes'][$idx]]
-                                );
+                        if (! empty($trans['includes'])) {
+                            foreach ($item->includes as $idx => $include) {
+                                if (isset($trans['includes'][$idx])) {
+                                    $include->translations()->updateOrCreate(
+                                        ['locale' => $locale],
+                                        ['text' => $trans['includes'][$idx]]
+                                    );
+                                }
                             }
                         }
                     }
