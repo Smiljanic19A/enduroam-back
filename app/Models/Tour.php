@@ -30,6 +30,9 @@ final class Tour extends Model
         'is_active',
         'automatic_payment',
         'deposit_percentage',
+        'is_inquiry_price',
+        'is_advertisement',
+        'is_flexible_duration',
         'availability_type',
         'available_weekdays',
     ];
@@ -44,6 +47,9 @@ final class Tour extends Model
             'is_active' => 'boolean',
             'automatic_payment' => 'boolean',
             'deposit_percentage' => 'integer',
+            'is_inquiry_price' => 'boolean',
+            'is_advertisement' => 'boolean',
+            'is_flexible_duration' => 'boolean',
             'available_weekdays' => 'array',
         ];
     }

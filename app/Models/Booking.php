@@ -16,6 +16,7 @@ final class Booking extends Model
         'bookable_type',
         'bookable_id',
         'start_date',
+        'end_date',
         'guest_name',
         'guest_email',
         'guest_phone',
@@ -33,6 +34,7 @@ final class Booking extends Model
     {
         return [
             'start_date' => 'date',
+            'end_date' => 'date',
             'number_of_guests' => 'integer',
             'total_price' => 'decimal:2',
             'deposit_amount' => 'decimal:2',

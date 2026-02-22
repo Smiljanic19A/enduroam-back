@@ -19,6 +19,7 @@ final class StoreBookingRequest extends FormRequest
             'bookable_type' => ['required', 'in:tour,event'],
             'bookable_id' => ['required', 'integer'],
             'start_date' => ['required', 'date', 'after_or_equal:today'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'guest_name' => ['required', 'string', 'max:255'],
             'guest_email' => ['required', 'email', 'max:255'],
             'guest_phone' => ['required', 'string', 'max:50'],

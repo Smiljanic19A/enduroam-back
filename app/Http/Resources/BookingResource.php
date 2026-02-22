@@ -22,6 +22,7 @@ final class BookingResource extends JsonResource
                 ];
             }),
             'startDate' => $this->start_date?->format('Y-m-d'),
+            'endDate' => $this->end_date?->format('Y-m-d'),
             'guestName' => $this->guest_name,
             'guestEmail' => $this->guest_email,
             'guestPhone' => $this->guest_phone,
@@ -29,7 +30,7 @@ final class BookingResource extends JsonResource
             'specialRequests' => $this->special_requests,
             'paymentMethod' => $this->payment_method,
             'status' => $this->status,
-            'totalPrice' => (float) $this->total_price,
+            'totalPrice' => $this->total_price !== null ? (float) $this->total_price : null,
             'depositAmount' => $this->deposit_amount ? (float) $this->deposit_amount : null,
             'paymentEmailSentAt' => $this->payment_email_sent_at?->toISOString(),
             'currency' => $this->currency,

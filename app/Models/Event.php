@@ -33,6 +33,7 @@ final class Event extends Model
         'is_featured',
         'automatic_payment',
         'deposit_percentage',
+        'is_advertisement',
         'availability_type',
         'available_weekdays',
     ];
@@ -50,6 +51,7 @@ final class Event extends Model
             'is_featured' => 'boolean',
             'automatic_payment' => 'boolean',
             'deposit_percentage' => 'integer',
+            'is_advertisement' => 'boolean',
             'available_weekdays' => 'array',
         ];
     }

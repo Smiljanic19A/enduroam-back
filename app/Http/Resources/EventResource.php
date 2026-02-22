@@ -39,6 +39,7 @@ final class EventResource extends JsonResource
             'isFeatured' => $this->is_featured,
             'automaticPayment' => $this->automatic_payment,
             'depositPercentage' => $this->deposit_percentage,
+            'isAdvertisement' => $this->is_advertisement,
             'availabilityType' => $this->availability_type,
             'availableWeekdays' => $this->available_weekdays,
             'availableDates' => $this->whenLoaded('availableDates', fn () => $this->availableDates->pluck('date')->map(fn ($d) => $d->format('Y-m-d'))),

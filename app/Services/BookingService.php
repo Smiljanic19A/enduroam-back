@@ -31,22 +31,56 @@ final class BookingService
                 ? Tour::findOrFail($data['bookable_id'])
                 : Event::findOrFail($data['bookable_id']);
 
-            $startDate = Carbon::parse($data['start_date']);
-
-            if (! $this->isDateAvailable($bookable, $startDate)) {
+            // S3-05: Reject bookings for advertisement items
+            if ($bookable->is_advertisement) {
                 throw ValidationException::withMessages([
-                    'start_date' => ['The selected date is not available for booking.'],
+                    'bookable_id' => ['This item is for display only and cannot be booked.'],
                 ]);
             }
 
-            $totalPrice = (float) $bookable->price * $data['number_of_guests'];
+            $startDate = Carbon::parse($data['start_date']);
+
+            // S3-06: Calculate end date for multi-day tours
+            $endDate = null;
+            if ($bookable instanceof Tour && $bookable->duration > 1) {
+                if ($bookable->is_flexible_duration && ! empty($data['end_date'])) {
+                    $endDate = Carbon::parse($data['end_date']);
+                } else {
+                    $endDate = $startDate->copy()->addDays($bookable->duration - 1);
+                }
+            }
+
+            // Validate entire date range (or single date)
+            if ($endDate) {
+                $current = $startDate->copy();
+                while ($current->lte($endDate)) {
+                    if (! $this->isDateAvailable($bookable, $current)) {
+                        throw ValidationException::withMessages([
+                            'start_date' => ["The date {$current->format('Y-m-d')} is not available for booking."],
+                        ]);
+                    }
+                    $current->addDay();
+                }
+            } else {
+                if (! $this->isDateAvailable($bookable, $startDate)) {
+                    throw ValidationException::withMessages([
+                        'start_date' => ['The selected date is not available for booking.'],
+                    ]);
+                }
+            }
+
+            // S3-04: Inquiry pricing — null price for inquiry tours
+            $isInquiry = $bookable instanceof Tour && $bookable->is_inquiry_price;
+
+            $totalPrice = $isInquiry ? null : (float) $bookable->price * $data['number_of_guests'];
             $depositPercentage = $bookable->deposit_percentage ?? 100;
-            $depositAmount = round($totalPrice * ($depositPercentage / 100), 2);
+            $depositAmount = $isInquiry ? null : round($totalPrice * ($depositPercentage / 100), 2);
 
             $booking = Booking::create([
                 'bookable_type' => $bookableType,
                 'bookable_id' => $bookable->id,
                 'start_date' => $data['start_date'],
+                'end_date' => $endDate?->format('Y-m-d'),
                 'guest_name' => $data['guest_name'],
                 'guest_email' => $data['guest_email'],
                 'guest_phone' => $data['guest_phone'],
@@ -63,16 +97,21 @@ final class BookingService
                 $bookable->decrement('spots_left', $data['number_of_guests']);
             }
 
+            $notificationType = $isInquiry ? 'new_inquiry' : 'new_booking';
+            $notificationTitle = $isInquiry
+                ? "New inquiry from {$booking->guest_name}"
+                : "New booking from {$booking->guest_name}";
+
             $this->notificationService->create(
-                type: 'new_booking',
-                title: "New booking from {$booking->guest_name}",
+                type: $notificationType,
+                title: $notificationTitle,
                 body: "{$booking->number_of_guests} guest(s) for {$bookable->name}",
                 data: [
                     'booking_id' => $booking->id,
                     'bookable_type' => $data['bookable_type'],
                     'bookable_name' => $bookable->name,
                     'guest_name' => $booking->guest_name,
-                    'total_price' => (float) $booking->total_price,
+                    'total_price' => $isInquiry ? null : (float) $booking->total_price,
                     'currency' => $booking->currency,
                 ],
             );
