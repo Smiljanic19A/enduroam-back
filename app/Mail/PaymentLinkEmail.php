@@ -19,6 +19,8 @@ final class PaymentLinkEmail extends Mailable implements ShouldQueue
 
     public string $body;
 
+    public ?string $ipsQrUrl;
+
     public function __construct(
         public readonly Booking $booking,
         public readonly string $customMessage,
@@ -51,6 +53,15 @@ final class PaymentLinkEmail extends Mailable implements ShouldQueue
                 ],
                 $template
             );
+        }
+
+        // Resolve IPS QR code URL
+        $ipsPath = SiteSetting::getValue('payment_ips_qr_image');
+        if ($ipsPath) {
+            $this->ipsQrUrl = presigned_url($ipsPath);
+        } else {
+            // Fallback: use public QR from frontend
+            $this->ipsQrUrl = rtrim(config('app.frontend_url', config('app.url')), '/') . '/qr.jpg';
         }
 
         $senderName = SiteSetting::getValue('email_sender_name', config('mail.from.name'));
