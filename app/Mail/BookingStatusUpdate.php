@@ -41,7 +41,7 @@ final class BookingStatusUpdate extends Mailable implements ShouldQueue
 
         $template = SiteSetting::getValue($settingKey, '');
 
-        $paymentLink = SiteSetting::getValue('email_default_payment_link', '');
+        $paymentLink = SiteSetting::getValue('payment_paypal_link', '');
 
         $this->body = str_replace(
             ['{guest_name}', '{tour_name}', '{booking_date}', '{guests}', '{total_price}', '{deposit_amount}', '{payment_link}'],
@@ -59,6 +59,11 @@ final class BookingStatusUpdate extends Mailable implements ShouldQueue
 
         $senderName = SiteSetting::getValue('email_sender_name', config('mail.from.name'));
         $this->from(config('mail.from.address'), $senderName);
+
+        $replyTo = SiteSetting::getValue('email_reply_to');
+        if ($replyTo) {
+            $this->replyTo($replyTo, $senderName);
+        }
 
         return new Content(
             view: 'emails.booking-status-update',

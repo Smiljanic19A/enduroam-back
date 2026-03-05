@@ -32,6 +32,12 @@ final class NewsletterBroadcast extends Mailable implements ShouldQueue
 
     public function content(): Content
     {
+        $replyTo = \App\Models\SiteSetting::getValue('email_reply_to');
+        if ($replyTo) {
+            $senderName = \App\Models\SiteSetting::getValue('email_sender_name', config('mail.from.name'));
+            $this->replyTo($replyTo, $senderName);
+        }
+
         return new Content(
             view: 'emails.newsletter',
             with: [

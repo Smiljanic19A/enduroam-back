@@ -39,6 +39,11 @@ final class ContactMessageReply extends Mailable implements ShouldQueue
         $senderName = SiteSetting::getValue('email_sender_name', config('mail.from.name'));
         $this->from(config('mail.from.address'), $senderName);
 
+        $replyTo = SiteSetting::getValue('email_reply_to');
+        if ($replyTo) {
+            $this->replyTo($replyTo, $senderName);
+        }
+
         return new Content(
             view: 'emails.contact-reply',
         );
