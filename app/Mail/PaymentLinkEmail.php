@@ -29,8 +29,11 @@ final class PaymentLinkEmail extends Mailable implements ShouldQueue
 
     public function envelope(): Envelope
     {
+        $replyTo = SiteSetting::getValue('email_reply_to');
+
         return new Envelope(
             subject: "Payment for Booking #{$this->booking->id}",
+            replyTo: $replyTo ? [$replyTo] : [],
         );
     }
 
@@ -66,11 +69,6 @@ final class PaymentLinkEmail extends Mailable implements ShouldQueue
 
         $senderName = SiteSetting::getValue('email_sender_name', config('mail.from.name'));
         $this->from(config('mail.from.address'), $senderName);
-
-        $replyTo = SiteSetting::getValue('email_reply_to');
-        if ($replyTo) {
-            $this->replyTo($replyTo, $senderName);
-        }
 
         return new Content(
             view: 'emails.payment-link',
