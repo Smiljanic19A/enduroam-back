@@ -158,6 +158,9 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/translations/publish', [Admin\TranslationController::class, 'publishAll'])->name('translations.publishAll');
         Route::post('/translations/auto-translate', [Admin\TranslationController::class, 'autoTranslate'])->name('translations.autoTranslate');
 
+        // Quick Email
+        Route::post('/emails/send', [Admin\EmailController::class, 'send'])->name('emails.send');
+
         // File Upload (Wasabi S3)
         Route::post('/upload', [Admin\UploadController::class, 'store'])->name('upload.store');
         Route::delete('/upload', [Admin\UploadController::class, 'destroy'])->name('upload.destroy');
